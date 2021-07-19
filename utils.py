@@ -1,6 +1,5 @@
 from models.lstm_posetrack import LSTM_posetrack
 from models.lstm_3dpw import LSTM_vel3d
-from utils import data_loader_posetrack, data_loader
 import torch
 import torch.optim as optim
 import matplotlib
@@ -248,7 +247,7 @@ class myDataset_posetrack(torch.utils.data.Dataset):
         self.dtype = dtype
         self.fname = fname
         print("Loading", self.dtype)
-        sequence_centric = pd.read_csv(self.fname + self.dtype + ".csv")
+        sequence_centric = pd.read_csv('processed_csvs/' + self.fname + self.dtype + ".csv")
         df = sequence_centric.copy()
         for v in list(df.columns.values):
             print(v + ' loaded')

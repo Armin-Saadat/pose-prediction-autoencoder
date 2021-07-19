@@ -8,7 +8,6 @@ from utils import ADE_c, FDE_c, speed2pos, AverageMeter, ADE_3d, FDE_3d, speed2p
 from utils import set_loader, set_model, set_optimizer, set_scheduler
 
 
-
 def parse_option():
     parser = argparse.ArgumentParser('argument for training')
     parser.add_argument('--batch_size', type=int, default=80,
