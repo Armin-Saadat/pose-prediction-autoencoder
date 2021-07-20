@@ -8,6 +8,7 @@ import time
 from utils import ADE_c, FDE_c, speed2pos, AverageMeter, ADE_3d, FDE_3d, speed2pos3d
 from utils import set_loader, set_model, set_optimizer, set_scheduler, save_model, load_model
 
+
 def parse_option():
     parser = argparse.ArgumentParser('argument for training')
     parser.add_argument('--batch_size', type=int, default=80,
@@ -31,9 +32,10 @@ def parse_option():
     parser.add_argument('--model_name', type=str, default='lstm_vel', choices=['lstm_vel', 'disentangling'])
     parser.add_argument('--input', type=int, default=16)
     parser.add_argument('--output', type=int, default=14)
-    parser.add_argument('--save_folder', type=str, default='outputs')
+    parser.add_argument('--save_folder', type=str, default='snapshots')
     parser.add_argument('--save_freq', type=int, default=50)
     parser.add_argument('--ckpt', type=str)
+    parser.add_argument('--name', type=str)
 
     opt = parser.parse_args()
     opt.stride = opt.input
@@ -83,16 +85,15 @@ def train_postrack(train_loader, val_loader, model, optimizer, scheduler, opt):
             optimizer.step()
             avg_epoch_train_speed_loss.update(val=float(speed_loss))
             avg_epoch_train_pose_loss.update(val=float(mask_loss))
-            if idx % opt.save_freq == 0:
-                save_file = os.path.join(
-                    opt.save_folder, 'ckpt_epoch_{epoch}.pth'.format(epoch=epoch))
-                save_model(model, optimizer, opt, idx, save_file)
 
+        if (epoch + 1) % opt.save_freq == 0:
+            save_file = os.path.join(
+                opt.save_folder, 'ckpt_{name}_epoch_{epoch}.pth'.format(name=opt.name, epoch=epoch))
+            save_model(model, optimizer, opt, idx, save_file)
 
         train_s_scores.append(avg_epoch_train_speed_loss.avg)
 
         for idx, (obs_s, target_s, obs_pose, target_pose, obs_mask, target_mask) in enumerate(val_loader):
-            print(obs_s.shape)
             obs_s = obs_s.to(device='cuda')
             target_s = target_s.to(device='cuda')
             obs_pose = obs_pose.to(device='cuda')
