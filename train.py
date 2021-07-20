@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn as nn
 
@@ -5,8 +6,7 @@ import sys
 import argparse
 import time
 from utils import ADE_c, FDE_c, speed2pos, AverageMeter, ADE_3d, FDE_3d, speed2pos3d
-from utils import set_loader, set_model, set_optimizer, set_scheduler
-
+from utils import set_loader, set_model, set_optimizer, set_scheduler, save_model
 
 def parse_option():
     parser = argparse.ArgumentParser('argument for training')
@@ -31,6 +31,9 @@ def parse_option():
     parser.add_argument('--model_name', type=str, default='lstm_vel', choices=['lstm_vel', 'disentangling'])
     parser.add_argument('--input', type=int, default=16)
     parser.add_argument('--output', type=int, default=14)
+    parser.add_argument('--save_folder', type=str, default='outputs')
+    parser.add_argument('--save_freq', type=int, default=50)
+
 
     opt = parser.parse_args()
     opt.stride = opt.input
@@ -80,6 +83,11 @@ def train_postrack(train_loader, val_loader, model, optimizer, scheduler, opt):
             optimizer.step()
             avg_epoch_train_speed_loss.update(val=float(speed_loss))
             avg_epoch_train_pose_loss.update(val=float(mask_loss))
+            if idx % opt.save_freq == 0:
+                save_file = os.path.join(
+                    opt.save_folder, 'ckpt_epoch_{epoch}.pth'.format(epoch=epoch))
+                save_model(model, optimizer, opt, idx, save_file)
+
 
         train_s_scores.append(avg_epoch_train_speed_loss.avg)
 
