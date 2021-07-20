@@ -6,7 +6,7 @@ import sys
 import argparse
 import time
 from utils import ADE_c, FDE_c, speed2pos, AverageMeter, ADE_3d, FDE_3d, speed2pos3d
-from utils import set_loader, set_model, set_optimizer, set_scheduler, save_model
+from utils import set_loader, set_model, set_optimizer, set_scheduler, save_model, load_model
 
 def parse_option():
     parser = argparse.ArgumentParser('argument for training')
@@ -33,7 +33,7 @@ def parse_option():
     parser.add_argument('--output', type=int, default=14)
     parser.add_argument('--save_folder', type=str, default='outputs')
     parser.add_argument('--save_freq', type=int, default=50)
-
+    parser.add_argument('--ckpt', type=str)
 
     opt = parser.parse_args()
     opt.stride = opt.input
@@ -92,6 +92,7 @@ def train_postrack(train_loader, val_loader, model, optimizer, scheduler, opt):
         train_s_scores.append(avg_epoch_train_speed_loss.avg)
 
         for idx, (obs_s, target_s, obs_pose, target_pose, obs_mask, target_mask) in enumerate(val_loader):
+            print(obs_s.shape)
             obs_s = obs_s.to(device='cuda')
             target_s = target_s.to(device='cuda')
             obs_pose = obs_pose.to(device='cuda')
@@ -214,6 +215,9 @@ if __name__ == '__main__':
     opt = parse_option()
     train_loader, val_loader = set_loader(opt)
     model = set_model(opt)
+    if opt.ckpt is not None:
+        model = load_model(opt, model)
+
     optimizer = set_optimizer(opt, model)
     scheduler = set_scheduler(opt, optimizer)
     if opt.dataset_name == 'posetrack':
