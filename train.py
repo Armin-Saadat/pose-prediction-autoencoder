@@ -31,7 +31,7 @@ def parse_option():
     parser.add_argument('--input', type=int, default=16)
     parser.add_argument('--output', type=int, default=14)
     parser.add_argument('--save_folder', type=str, default='snapshots')
-    parser.add_argument('--save_freq', type=int, default=50)
+    parser.add_argument('--save_freq', type=int, default=200)
     parser.add_argument('--load_ckpt', type=str)
     parser.add_argument('--name', type=str)
 
@@ -48,7 +48,7 @@ def train_global_disentangling(train_loader, val_loader, model, optimizer, sched
 
     train_s_scores = []
     val_s_scores = []
-    for epoch in range(opt.epochs):
+    for epoch in range(1, opt.epochs + 1):
         start = time.time()
         avg_epoch_train_speed_loss = AverageMeter()
         avg_epoch_val_speed_loss = AverageMeter()
@@ -83,7 +83,7 @@ def train_global_disentangling(train_loader, val_loader, model, optimizer, sched
             avg_epoch_train_speed_loss.update(val=float(speed_loss))
             avg_epoch_train_pose_loss.update(val=float(mask_loss))
 
-        if (epoch + 1) % opt.save_freq == 0:
+        if epoch % opt.save_freq == 0:
             save_file = os.path.join(
                 opt.save_folder, 'ckpt_{name}_epoch_{epoch}.pth'.format(name=opt.name, epoch=epoch))
             save_model(model, optimizer, opt, idx, save_file)
