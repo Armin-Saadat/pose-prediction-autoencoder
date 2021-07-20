@@ -1,5 +1,6 @@
 from models.lstm_posetrack import LSTM_posetrack
 from models.lstm_3dpw import LSTM_vel3d
+from models.disentangling_posetrack import Disentangling_Posetrack
 import torch
 import torch.optim as optim
 import matplotlib
@@ -22,10 +23,16 @@ def set_loader(opt):
 
 
 def set_model(opt):
-    if opt.dataset_name == 'posetrack':
-        return LSTM_posetrack(opt).to(opt.device)
-    else:
-        return LSTM_vel3d(opt).to(opt.device)
+    if opt.model_name == 'lstm_vel':
+        if opt.dataset_name == 'posetrack':
+            return LSTM_posetrack(opt).to(opt.device)
+        else:
+            return LSTM_vel3d(opt).to(opt.device)
+    elif opt.model_name == 'disentangling':
+        if opt.dataset_name == 'posetrack':
+            return Disentangling_Posetrack(opt).to(opt.device)
+        else:
+            return None
 
 
 def set_optimizer(opt, model):

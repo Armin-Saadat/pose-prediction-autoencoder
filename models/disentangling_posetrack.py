@@ -2,19 +2,19 @@ import torch
 import torch.nn as nn
 
 
-class LSTM_posetrack(nn.Module):
+class Disentangling_Posetrack(nn.Module):
     def __init__(self, args):
-        super(LSTM_posetrack, self).__init__()
+        super(Disentangling_Posetrack, self).__init__()
 
-        self.pose_encoder = nn.LSTM(input_size=28, hidden_size=args.hidden_size)
-        self.vel_encoder = nn.LSTM(input_size=28, hidden_size=args.hidden_size)
+        self.pose_encoder = nn.LSTM(input_size=2, hidden_size=args.hidden_size)
+        self.vel_encoder = nn.LSTM(input_size=2, hidden_size=args.hidden_size)
 
-        self.pose_embedding = nn.Sequential(nn.Linear(in_features=args.hidden_size, out_features=28),
+        self.pose_embedding = nn.Sequential(nn.Linear(in_features=args.hidden_size, out_features=2),
                                             nn.ReLU())
 
-        self.vel_decoder = nn.LSTMCell(input_size=28, hidden_size=args.hidden_size)
+        self.vel_decoder = nn.LSTMCell(input_size=2, hidden_size=args.hidden_size)
 
-        self.fc_vel = nn.Linear(in_features=args.hidden_size, out_features=28)
+        self.fc_vel = nn.Linear(in_features=args.hidden_size, out_features=2)
 
         self.hardtanh = nn.Hardtanh(min_val=-1 * args.hardtanh_limit, max_val=args.hardtanh_limit)
         self.relu = nn.LeakyReLU()
