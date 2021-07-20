@@ -34,8 +34,9 @@ def set_model(opt):
         else:
             return None
 
+
 def load_model(opt, model):
-    ckpt = torch.load(opt.ckpt, map_location='cpu')
+    ckpt = torch.load(opt.load_ckpt, map_location='cpu')
     state_dict = ckpt['model']
     if torch.cuda.is_available():
         new_state_dict = {}
@@ -45,6 +46,12 @@ def load_model(opt, model):
         state_dict = new_state_dict
     model.load_state_dict(state_dict)
     return model
+
+
+def get_model(opt):
+    model = set_model(opt)
+    return load_model(opt, model)
+
 
 def set_optimizer(opt, model):
     return optim.Adam(model.parameters(), lr=opt.learning_rate)

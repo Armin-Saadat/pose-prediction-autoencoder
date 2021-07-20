@@ -24,8 +24,6 @@ def parse_option():
     parser.add_argument('--loader_shuffle', type=bool, default=False)
     parser.add_argument('--pin_memory', type=bool, default=False)
     parser.add_argument('--device', type=str, default='cuda')
-    parser.add_argument('--input_size', type=int, default=14)
-    parser.add_argument('--output_size', type=int, default=16)
     parser.add_argument('--hidden_size', type=int, default=1000)
     parser.add_argument('--hardtanh_limit', type=int, default=100)
     parser.add_argument('--dataset_name', type=str, default='posetrack', choices=['posetrack', '3dpw'])
@@ -34,7 +32,7 @@ def parse_option():
     parser.add_argument('--output', type=int, default=14)
     parser.add_argument('--save_folder', type=str, default='snapshots')
     parser.add_argument('--save_freq', type=int, default=50)
-    parser.add_argument('--ckpt', type=str)
+    parser.add_argument('--load_ckpt', type=str)
     parser.add_argument('--name', type=str)
 
     opt = parser.parse_args()
@@ -216,7 +214,7 @@ if __name__ == '__main__':
     opt = parse_option()
     train_loader, val_loader = set_loader(opt)
     model = set_model(opt)
-    if opt.ckpt is not None:
+    if opt.load_ckpt is not None:
         model = load_model(opt, model)
 
     optimizer = set_optimizer(opt, model)
