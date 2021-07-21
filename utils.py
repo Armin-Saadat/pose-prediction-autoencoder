@@ -1,7 +1,5 @@
 import torch
 import torch.optim as optim
-import pandas as pd
-from ast import literal_eval
 
 from models.lstm_vel_posetrack import LSTM_Vel_Posetrack
 from models.lstm_vel_3dpw import LSTM_Vel_3dpw
