@@ -19,7 +19,6 @@ def parse_option():
     opt.stride = opt.input
     opt.skip = 1
     opt.dataset_name = 'posetrack'
-    opt.model_name = 'lstm_vel'
     return opt
 
 
@@ -79,9 +78,12 @@ def regenerate_entire_pose(global_pose: torch.Tensor, local_pose: torch.Tensor):
 if __name__ == '__main__':
     opt = parse_option()
     _, val_loader = set_dataloader(opt)
-    global_model, local_model = set_model(opt)
+    opt.model__name = 'de_global'
+    global_model = set_model(opt)
+    opt.model__name = 'de_local'
+    local_model = set_model(opt)
     if opt.load_ckpt is not None:
         global_model = load_model(opt, global_model)
-        local_model = local_model(opt, local_model)
+        local_model = load_model(opt, local_model)
 
     predict(val_loader, global_model, local_model)

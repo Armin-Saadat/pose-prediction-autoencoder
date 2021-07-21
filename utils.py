@@ -4,6 +4,7 @@ import torch.optim as optim
 from models.lstm_vel_posetrack import LSTM_Vel_Posetrack
 from models.lstm_vel_3dpw import LSTM_Vel_3dpw
 from models.de_global_posetrack import DE_Global_Posetrack
+from models.de_local_posetrack import DE_Local_Posetrack
 from dataloader.lstm_vel_dataloader import data_loader
 
 
@@ -33,16 +34,21 @@ def get_model(opt):
     model = set_model(opt)
     return load_model(opt, model)
 
-# TODO: handle bug
+
 def set_model(opt):
     if opt.model_name == 'lstm_vel':
         if opt.dataset_name == 'posetrack':
             return LSTM_Vel_Posetrack(opt).to(opt.device)
         else:
             return LSTM_Vel_3dpw(opt).to(opt.device)
-    elif opt.model_name == 'disentangling':
+    elif opt.model_name == 'de_global':
         if opt.dataset_name == 'posetrack':
             return DE_Global_Posetrack(opt).to(opt.device)
+        else:
+            return None
+    elif opt.model_name == 'de_local':
+        if opt.dataset_name == 'posetrack':
+            return DE_Local_Posetrack(opt).to(opt.device)
         else:
             return None
 
@@ -80,6 +86,7 @@ def set_scheduler(opt, optimizer):
     return optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=opt.lr_decay_rate, patience=10, threshold=1e-8,
                                                 verbose=True)
 
+# TODO: de_predict
 def set_dataloader(opt):
     if opt.model_name == 'lstm_vel':
         train_loader = data_loader(opt, "train", opt.dataset_name + "_")
