@@ -1,10 +1,9 @@
-from models.lstm_posetrack import LSTM_posetrack
-from models.lstm_3dpw import LSTM_vel3d
-from models.disentangling_posetrack import Disentangling_Posetrack
+from models.lstm_vel_posetrack import LSTM_Vel_Posetrack
+from models.lstm_vel_3dpw import LSTM_Vel_3dpw
+from models.de_global_posetrack import DE_Global_Posetrack
 import torch
 import torch.optim as optim
 import matplotlib
-from torch.utils.data import Dataset, DataLoader
 import numpy as np
 import pandas as pd
 from ast import literal_eval
@@ -25,12 +24,12 @@ def set_loader(opt):
 def set_model(opt):
     if opt.model_name == 'lstm_vel':
         if opt.dataset_name == 'posetrack':
-            return LSTM_posetrack(opt).to(opt.device)
+            return LSTM_Vel_Posetrack(opt).to(opt.device)
         else:
-            return LSTM_vel3d(opt).to(opt.device)
+            return LSTM_Vel_3dpw(opt).to(opt.device)
     elif opt.model_name == 'disentangling':
         if opt.dataset_name == 'posetrack':
-            return Disentangling_Posetrack(opt).to(opt.device)
+            return DE_Global_Posetrack(opt).to(opt.device)
         else:
             return None
 
