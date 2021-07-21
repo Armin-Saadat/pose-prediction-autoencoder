@@ -4,8 +4,7 @@ import torch.optim as optim
 from models.lstm_vel_posetrack import LSTM_Vel_Posetrack
 from models.lstm_vel_3dpw import LSTM_Vel_3dpw
 from models.de_global_posetrack import DE_Global_Posetrack
-from dataloader.lstm_vel_3dpw import data_loader
-from dataloader.lstm_vel_posetrack import data_loader_posetrack
+from dataloader.lstm_vel_dataloader import data_loader
 
 
 class AverageMeter(object):
@@ -83,14 +82,14 @@ def set_scheduler(opt, optimizer):
 
 
 def set_dataloader(opt):
-    if opt.dataset_name == 'posetrack':
-        train_loader = data_loader_posetrack(opt, "train", opt.dataset_name + "_")
-        validation_loader = data_loader_posetrack(opt, "valid", opt.dataset_name + "_")
-    else:
+    if opt.model_name == 'lstm_vel':
         train_loader = data_loader(opt, "train", opt.dataset_name + "_")
-        validation_loader = data_loader(opt, 'valid', opt.dataset_name + "_")
+        validation_loader = data_loader(opt, "valid", opt.dataset_name + "_")
+    elif opt.model_name == 'de_global':
+        pass
+    elif opt.model_name == 'de_local':
+        pass
     return train_loader, validation_loader
-
 
 def speed2pos(preds, obs_p):
     pred_pos = torch.zeros(preds.shape[0], preds.shape[1], preds.shape[2]).to('cuda')

@@ -3,7 +3,7 @@ import pandas as pd
 from ast import literal_eval
 
 
-class myDataset_posetrack(torch.utils.data.Dataset):
+class DE_Local_DataLoader(torch.utils.data.Dataset):
     def __init__(self, args, dtype, fname):
         self.args = args
         self.dtype = dtype
@@ -43,8 +43,8 @@ class myDataset_posetrack(torch.utils.data.Dataset):
         return tuple(outputs)
 
 
-def data_loader_posetrack(args, data, fname):
-    dataset = myDataset_posetrack(args, data, fname)
+def data_loader_de_local(args, data, fname):
+    dataset = DE_Local_DataLoader(args, data, fname)
     dataloader = torch.utils.data.DataLoader(
         dataset, batch_size=args.batch_size, shuffle=args.loader_shuffle,
         pin_memory=args.pin_memory)

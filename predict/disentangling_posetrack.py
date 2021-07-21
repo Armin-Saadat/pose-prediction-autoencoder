@@ -23,7 +23,7 @@ def parse_option():
     return opt
 
 
-def predict(global_loader, global_model, local_model, local_loader):
+def predict(loader, global_model, local_model):
     l1e = nn.L1Loss()
     bce = nn.BCELoss()
     val_s_scores = []
@@ -48,6 +48,7 @@ def predict(global_loader, global_model, local_model, local_loader):
             (local_vel_preds, mask_preds) = local_model(pose=local_obs_pose, vel=local_obs_vel, mask=obs_mask)
             local_speed_loss = l1e(local_vel_preds, local_target_velocities)
             global_speed_loss = l1e(global_vel_preds, global_target_velocities)
+            mask_loss = bce(mask_preds, target_mask)
 
             # avg_epoch_val_speed_loss.update(val=float(speed_loss))
 
