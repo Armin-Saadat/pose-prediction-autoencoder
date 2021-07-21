@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 
 
-class LSTM_posetrack(nn.Module):
+class LSTM_Vel_Posetrack(nn.Module):
     def __init__(self, args):
-        super(LSTM_posetrack, self).__init__()
+        super(LSTM_Vel_Posetrack, self).__init__()
 
         self.pose_encoder = nn.LSTM(input_size=28, hidden_size=args.hidden_size)
         self.vel_encoder = nn.LSTM(input_size=28, hidden_size=args.hidden_size)

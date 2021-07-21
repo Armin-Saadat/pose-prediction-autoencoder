@@ -7,11 +7,11 @@ import torchvision
 import torchvision.transforms as transforms
 
 
-class LSTM_vel3d(nn.Module):
+class LSTM_Vel_3dpw(nn.Module):
     def __init__(self, args):
         print("here")
         print(args)
-        super(LSTM_vel3d, self).__init__()
+        super(LSTM_Vel_3dpw, self).__init__()
 
         self.pose_encoder = nn.LSTM(input_size=39, hidden_size=args.hidden_size)
         self.vel_encoder = nn.LSTM(input_size=39, hidden_size=args.hidden_size)
