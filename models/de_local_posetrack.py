@@ -5,27 +5,19 @@ import torch.nn as nn
 class DE_Local_Posetrack(nn.Module):
     def __init__(self, args):
         super(DE_Local_Posetrack, self).__init__()
+        self.args = args
 
-        self.pose_encoder = nn.LSTM(input_size=2, hidden_size=args.hidden_size)
-        self.vel_encoder = nn.LSTM(input_size=2, hidden_size=args.hidden_size)
-
-        self.pose_embedding = nn.Sequential(nn.Linear(in_features=args.hidden_size, out_features=2),
-                                            nn.ReLU())
-
-        self.vel_decoder = nn.LSTMCell(input_size=2, hidden_size=args.hidden_size)
-
-        self.fc_vel = nn.Linear(in_features=args.hidden_size, out_features=2)
-
+        self.pose_encoder = nn.LSTM(input_size=26, hidden_size=args.hidden_size)
+        self.vel_encoder = nn.LSTM(input_size=26, hidden_size=args.hidden_size)
+        self.pose_embedding = nn.Sequential(nn.Linear(in_features=args.hidden_size, out_features=26), nn.ReLU())
+        self.vel_decoder = nn.LSTMCell(input_size=26, hidden_size=args.hidden_size)
+        self.fc_vel = nn.Linear(in_features=args.hidden_size, out_features=26)
         self.hardtanh = nn.Hardtanh(min_val=-1 * args.hardtanh_limit, max_val=args.hardtanh_limit)
-        self.relu = nn.LeakyReLU()
 
         self.mask_encoder = nn.LSTM(input_size=14, hidden_size=args.hidden_size)
         self.mask_decoder = nn.LSTMCell(input_size=14, hidden_size=args.hidden_size)
         self.fc_mask = nn.Linear(in_features=args.hidden_size, out_features=14)
-
         self.sigmoid = nn.Sigmoid()
-
-        self.args = args
 
     def forward(self, pose=None, vel=None, mask=None):
         _, (hidden_vel, cell_vel) = self.vel_encoder(vel.permute(1, 0, 2))
@@ -43,12 +35,11 @@ class DE_Local_Posetrack(nn.Module):
         outputs = []
         vel_outputs = torch.tensor([], device=self.args.device)
         mask_outputs = torch.tensor([], device=self.args.device)
-
         VelDec_inp = vel[:, -1, :]
         MaskDec_inp = mask[:, -1, :]
-
         hidden_dec = hidden_pose + hidden_vel
         cell_dec = cell_pose + cell_vel
+
         for i in range(self.args.output // self.args.skip):
             hidden_dec, cell_dec = self.vel_decoder(VelDec_inp, (hidden_dec, cell_dec))
             vel_output = self.hardtanh(self.fc_vel(hidden_dec))
