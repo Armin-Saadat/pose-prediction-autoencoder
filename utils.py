@@ -86,6 +86,7 @@ def set_scheduler(opt, optimizer):
     return optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=opt.lr_decay_rate, patience=10, threshold=1e-8,
                                                 verbose=True)
 
+
 # TODO: de_predict
 def set_dataloader(opt):
     if opt.model_name == 'lstm_vel':
@@ -96,6 +97,7 @@ def set_dataloader(opt):
     elif opt.model_name == 'de_local':
         pass
     return train_loader, validation_loader
+
 
 def speed2pos(preds, obs_p):
     pred_pos = torch.zeros(preds.shape[0], preds.shape[1], preds.shape[2]).to('cuda')

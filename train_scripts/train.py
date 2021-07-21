@@ -1,44 +1,13 @@
 import os
+import sys
+import time
 import torch
 import torch.nn as nn
 
-import sys
-import argparse
-import time
-from utils import ADE_c, FDE_c, speed2pos, AverageMeter, ADE_3d, FDE_3d, speed2pos3d
-from utils import set_loader, set_model, set_optimizer, set_scheduler, save_model, load_model
-
-
-def parse_option():
-    parser = argparse.ArgumentParser('argument for training')
-    parser.add_argument('--batch_size', type=int, default=80,
-                        help='batch_size')
-    parser.add_argument('--num_workers', type=int, default=1,
-                        help='num of workers to use')
-    parser.add_argument('--epochs', type=int, default=200,
-                        help='number of training epochs')
-    parser.add_argument('--learning_rate', type=float, default=0.01,
-                        help='learning rate')
-    parser.add_argument('--lr_decay_rate', type=float, default=0.25,
-                        help='decay rate for learning rate')
-    parser.add_argument('--loader_shuffle', type=bool, default=False)
-    parser.add_argument('--pin_memory', type=bool, default=False)
-    parser.add_argument('--device', type=str, default='cuda')
-    parser.add_argument('--hidden_size', type=int, default=1000)
-    parser.add_argument('--hardtanh_limit', type=int, default=100)
-    parser.add_argument('--dataset_name', type=str, default='posetrack', choices=['posetrack', '3dpw'])
-    parser.add_argument('--model_name', type=str, default='lstm_vel', choices=['lstm_vel', 'disentangling'])
-    parser.add_argument('--input', type=int, default=16)
-    parser.add_argument('--output', type=int, default=14)
-    parser.add_argument('--save_folder', type=str, default='snapshots')
-    parser.add_argument('--save_freq', type=int, default=200)
-    parser.add_argument('--load_ckpt', type=str)
-    parser.add_argument('--name', type=str)
-
-    opt = parser.parse_args()
-    opt.stride = opt.input
-    opt.skip = 1
-    return opt
+from metrices import ADE_c, FDE_c, ADE_3d, FDE_3d
+from utils import speed2pos, AverageMeter, speed2pos3d
+from utils import set_dataloader, set_model, set_optimizer, set_scheduler, save_model, load_model
+from option import parse_option
 
 
 def train_global_disentangling(train_loader, val_loader, model, optimizer, scheduler, opt):
@@ -297,7 +266,7 @@ def train_3dpw(train_loader, val_loader, model, optimizer, scheduler, opt):
 
 if __name__ == '__main__':
     opt = parse_option()
-    train_loader, val_loader = set_loader(opt)
+    train_loader, val_loader = set_dataloader(opt)
     model = set_model(opt)
     if opt.load_ckpt is not None:
         model = load_model(opt, model)
