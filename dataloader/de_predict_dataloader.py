@@ -28,11 +28,11 @@ class DE_Predict_DataLoader(torch.utils.data.Dataset):
         seq = self.data.iloc[index]
         outputs = []
         obs = torch.tensor([seq.Pose[i] for i in range(0, self.args.input, self.args.skip)])
-        obs = self.create_var(obs)
+        obs = self.create_pred_vals(obs)
         obs_speed = (obs[1:, 2:] - obs[:-1, 2:])
 
         true = torch.tensor([seq.Future_Pose[i] for i in range(0, self.args.output, self.args.skip)])
-        true = self.create_var(true)
+        true = self.create_pred_vals(true)
         true_speed = torch.cat(((true[0] - obs[-1]).unsqueeze(0), true[1:] - true[:-1]))
         outputs.append(obs_speed)
         outputs.append(true_speed)
@@ -46,12 +46,12 @@ class DE_Predict_DataLoader(torch.utils.data.Dataset):
             outputs.append(true_mask)
         return tuple(outputs)
 
-    def create_var(self, data):
+    def create_pred_vals(self, data):
         neck_joint_data = data[:, :2]  # [16,2]
         other_joints_data = data[:, 2:]  # [16,26]
         for i, val in enumerate(other_joints_data):
             for j in range(13):
-                val[2*j: 2*(j+1)] = torch.sub(val[2*j: 2*(j+1)], neck_joint_data)
+                val[2*j: 2*(j+1)] = torch.sub(val[2*j: 2*(j+1)], neck_joint_data[i])
         return torch.cat((neck_joint_data, other_joints_data), 1)
 
 

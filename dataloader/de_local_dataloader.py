@@ -51,7 +51,7 @@ class DE_Local_DataLoader(torch.utils.data.Dataset):
         other_joints_data = data[:, 2:]  # [16,26]
         for i, val in enumerate(other_joints_data):
             for j in range(13):
-                val[2*j: 2*(j+1)] = torch.sub(val[2*j: 2*(j+1)], neck_joint_data)
+                val[2*j: 2*(j+1)] = torch.sub(val[2*j: 2*(j+1)], neck_joint_data[i])
         return other_joints_data
 
 
