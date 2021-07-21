@@ -266,7 +266,6 @@ def VAM(GT, pred, occ_cutoff, pred_visib):
 
 class myDataset_posetrack(torch.utils.data.Dataset):
     def __init__(self, args, dtype, fname):
-
         self.args = args
         self.dtype = dtype
         self.fname = fname
@@ -281,17 +280,14 @@ class myDataset_posetrack(torch.utils.data.Dataset):
                 continue
         sequence_centric[df.columns] = df[df.columns]
         self.data = sequence_centric.copy().reset_index(drop=True)
-
         print('*' * 30)
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, index):
-
         seq = self.data.iloc[index]
         outputs = []
-
         obs = torch.tensor([seq.Pose[i] for i in range(0, self.args.input, self.args.skip)])
         obs_speed = (obs[1:] - obs[:-1])
         outputs.append(obs_speed)
@@ -304,7 +300,6 @@ class myDataset_posetrack(torch.utils.data.Dataset):
         if self.fname == "posetrack_":
             obs_mask = torch.tensor([seq.Mask[i] for i in range(0, self.args.output, self.args.skip)])
             true_mask = torch.tensor([seq.Future_Mask[i] for i in range(0, self.args.output, self.args.skip)])
-
             outputs.append(obs_mask)
             outputs.append(true_mask)
 

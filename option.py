@@ -1,3 +1,6 @@
+import argparse
+
+
 class Option:
     def __init__(self, epochs=200, batch_size=128, learning_rate=0.01, lr_decay_rate=0.25, load_ckpt=None):
         self.batch_size = batch_size
@@ -19,3 +22,29 @@ class Option:
         self.load_ckpt = load_ckpt
         self.stride = self.input
         self.skip = 1
+
+
+def parse_option(model_name, dataset_name):
+    parser = argparse.ArgumentParser('argument for training')
+    parser.add_argument('--batch_size', type=int, default=80, help='batch_size')
+    parser.add_argument('--num_workers', type=int, default=1, help='num of workers to use')
+    parser.add_argument('--epochs', type=int, default=200, help='number of training epochs')
+    parser.add_argument('--learning_rate', type=float, default=0.01, help='learning rate')
+    parser.add_argument('--lr_decay_rate', type=float, default=0.25, help='decay rate for learning rate')
+    parser.add_argument('--loader_shuffle', type=bool, default=False)
+    parser.add_argument('--pin_memory', type=bool, default=False)
+    parser.add_argument('--device', type=str, default='cuda')
+    parser.add_argument('--hidden_size', type=int, default=1000)
+    parser.add_argument('--hardtanh_limit', type=int, default=100)
+    parser.add_argument('--input', type=int, default=16)
+    parser.add_argument('--output', type=int, default=14)
+    parser.add_argument('--save_folder', type=str, default='snapshots')
+    parser.add_argument('--save_freq', type=int, default=200)
+    parser.add_argument('--load_ckpt', type=str)
+    parser.add_argument('--name', type=str)
+    opt = parser.parse_args()
+    opt.stride = opt.input
+    opt.skip = 1
+    opt.model_name = model_name
+    opt.dataset_name = dataset_name
+    return opt
