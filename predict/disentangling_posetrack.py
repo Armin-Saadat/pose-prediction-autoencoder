@@ -29,30 +29,31 @@ def predict(loader, global_model, local_model):
 
     start = time.time()
     avg_epoch_val_speed_loss = AverageMeter()
-    avg_epoch_val_pose_loss = AverageMeter()
+    avg_epoch_val_mask_loss = AverageMeter()
 
     ade_val = AverageMeter()
     fde_val = AverageMeter()
     for idx, (obs_velocities, target_velocities, obs_pose, target_pose, obs_mask, target_mask) in loader:
-        global_obs_vel = obs_velocities[:, :, 2].to(device='cuda')
-        local_obs_vel = obs_velocities[:, :, 2:]
-        global_target_velocities = target_velocities[:, :, 2]
-        local_target_velocities = target_velocities[:, :, 2:]
-        global_obs_pose = obs_pose[:, :, 2].to(device='cuda')
-        local_obs_pose = obs_pose[:, :, 2].to(device='cuda')
-        obs_mask = obs_mask.to(device='cuda')
-        target_mask = target_mask.to(device='cuda')
+        global_vel_obs = obs_velocities[:, :, 2].to(device='cuda')
+        local_vel_obs = obs_velocities[:, :, 2:].to(device='cuda')
+        global_vel_targets = target_velocities[:, :, 2].to(device='cuda')
+        local_vel_targets = target_velocities[:, :, 2:].to(device='cuda')
+        global_pose_obs = obs_pose[:, :, 2].to(device='cuda')
+        local_pose_obs = obs_pose[:, :, 2].to(device='cuda')
+        mask_obs = obs_mask.to(device='cuda')
+        mask_target = target_mask.to(device='cuda')
         with torch.no_grad():
-            (global_vel_preds, _) = global_model(pose=global_obs_pose, vel=global_obs_vel)
-            (local_vel_preds, mask_preds) = local_model(pose=local_obs_pose, vel=local_obs_vel, mask=obs_mask)
-            local_speed_loss = l1e(local_vel_preds, local_target_velocities)
-            global_speed_loss = l1e(global_vel_preds, global_target_velocities)
-            mask_loss = bce(mask_preds, target_mask)
+            (global_vel_preds, _) = global_model(pose=global_pose_obs, vel=global_vel_obs)
+            (local_vel_preds, mask_preds) = local_model(pose=local_pose_obs, vel=local_vel_obs, mask=mask_obs)
+            local_speed_loss = l1e(local_vel_preds, local_vel_targets)
+            global_speed_loss = l1e(global_vel_preds, global_vel_targets)
+            mask_loss = bce(mask_preds, mask_target)
+            avg_epoch_val_mask_loss.update(val=float(mask_loss))
+            avg_epoch_val_speed_loss.update(val=float(global_speed_loss + local_speed_loss))
 
-            # avg_epoch_val_speed_loss.update(val=float(speed_loss))
+            global_pose_pred = speed2pos(global_vel_preds, global_pose_obs)
+            local_pose_pred = speed2pos(local_vel_preds, local_pose_obs)
 
-            global_pose_pred = speed2pos(global_vel_preds, global_obs_pose)
-            local_pose_pred = speed2pos(local_vel_preds, local_obs_pose)
             # now we have to make a prediction
             pred_pose = regenerate_entire_pose(global_pose_pred, local_pose_pred)
 
@@ -61,15 +62,15 @@ def predict(loader, global_model, local_model):
 
     val_s_scores.append(avg_epoch_val_speed_loss.avg)
     print('| validation_speed_loss: %.2f' % avg_epoch_val_speed_loss.avg,
-          '| validation_mask_loss: %.2f' % avg_epoch_val_pose_loss.avg,
+          '| validation_mask_loss: %.2f' % avg_epoch_val_mask_loss.avg,
           '| ade_val: %.2f' % ade_val.avg, '| fde_val: %.2f' % fde_val.avg,
           '| epoch_time.avg:%.2f' % (time.time() - start))
     sys.stdout.flush()
 
 
 def regenerate_entire_pose(global_pose: torch.Tensor, local_pose: torch.Tensor):
-    for i in len(local_pose):
-        for j, pose in enumerate(local_pose[i]):
+    for i in len(local_pose):  # iterate over batch size
+        for j, pose in enumerate(local_pose[i]):  # iterate over frames
             for k in range(13):
                 pose[2*k:2*(k+1)] = torch.add(global_pose[i][j], pose[2*k:2*(k+1)])
     return torch.cat((global_pose, local_pose), 2)
@@ -77,13 +78,15 @@ def regenerate_entire_pose(global_pose: torch.Tensor, local_pose: torch.Tensor):
 
 if __name__ == '__main__':
     opt = parse_option()
+    opt.model_name = 'de_predict'
     _, val_loader = set_dataloader(opt)
     opt.model__name = 'de_global'
     global_model = set_model(opt)
-    opt.model__name = 'de_local'
+    opt.model_name = 'de_local'
     local_model = set_model(opt)
     if opt.load_ckpt is not None:
         global_model = load_model(opt, global_model)
         local_model = load_model(opt, local_model)
-
+    else:
+        raise EnvironmentError
     predict(val_loader, global_model, local_model)

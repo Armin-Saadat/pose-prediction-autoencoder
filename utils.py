@@ -5,7 +5,10 @@ from models.lstm_vel_posetrack import LSTM_Vel_Posetrack
 from models.lstm_vel_3dpw import LSTM_Vel_3dpw
 from models.de_global_posetrack import DE_Global_Posetrack
 from models.de_local_posetrack import DE_Local_Posetrack
-from dataloader.lstm_vel_dataloader import data_loader
+from dataloader.lstm_vel_dataloader import data_loader_lstm_vel
+from dataloader.de_global_dataloader import data_loader_de_global
+from dataloader.de_local_dataloader import data_loader_de_local
+from dataloader.de_predict_dataloader import data_loader_de_predict
 
 
 class AverageMeter(object):
@@ -87,15 +90,19 @@ def set_scheduler(opt, optimizer):
                                                 verbose=True)
 
 
-# TODO: de_predict
 def set_dataloader(opt):
     if opt.model_name == 'lstm_vel':
-        train_loader = data_loader(opt, "train", opt.dataset_name + "_")
-        validation_loader = data_loader(opt, "valid", opt.dataset_name + "_")
+        train_loader = data_loader_lstm_vel(opt, "train", opt.dataset_name + "_")
+        validation_loader = data_loader_lstm_vel(opt, "valid", opt.dataset_name + "_")
     elif opt.model_name == 'de_global':
-        pass
+        train_loader = data_loader_de_global(opt, "train", opt.dataset_name + "_")
+        validation_loader = data_loader_de_global(opt, "valid", opt.dataset_name + "_")
     elif opt.model_name == 'de_local':
-        pass
+        train_loader = data_loader_de_local(opt, "train", opt.dataset_name + "_")
+        validation_loader = data_loader_de_local(opt, "valid", opt.dataset_name + "_")
+    elif opt.model_name == 'de_predict':
+        train_loader = None
+        validation_loader = data_loader_de_predict(opt, "valid", opt.dataset_name + "_")
     return train_loader, validation_loader
 
 

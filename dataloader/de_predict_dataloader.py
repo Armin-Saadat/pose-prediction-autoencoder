@@ -3,7 +3,7 @@ import pandas as pd
 from ast import literal_eval
 
 
-class LSTM_VEL_DataLoader(torch.utils.data.Dataset):
+class DE_Predict_DataLoader(torch.utils.data.Dataset):
     def __init__(self, args, dtype, fname):
         self.args = args
         self.dtype = dtype
@@ -28,13 +28,17 @@ class LSTM_VEL_DataLoader(torch.utils.data.Dataset):
         seq = self.data.iloc[index]
         outputs = []
         obs = torch.tensor([seq.Pose[i] for i in range(0, self.args.input, self.args.skip)])
-        obs_speed = (obs[1:] - obs[:-1])
-        outputs.append(obs_speed)
+        obs = self.create_var(obs)
+        obs_speed = (obs[1:, 2:] - obs[:-1, 2:])
+
         true = torch.tensor([seq.Future_Pose[i] for i in range(0, self.args.output, self.args.skip)])
+        true = self.create_var(true)
         true_speed = torch.cat(((true[0] - obs[-1]).unsqueeze(0), true[1:] - true[:-1]))
+        outputs.append(obs_speed)
         outputs.append(true_speed)
         outputs.append(obs)
         outputs.append(true)
+
         if self.fname == "posetrack_":
             obs_mask = torch.tensor([seq.Mask[i] for i in range(0, self.args.output, self.args.skip)])
             true_mask = torch.tensor([seq.Future_Mask[i] for i in range(0, self.args.output, self.args.skip)])
@@ -42,9 +46,17 @@ class LSTM_VEL_DataLoader(torch.utils.data.Dataset):
             outputs.append(true_mask)
         return tuple(outputs)
 
+    def create_var(self, data):
+        neck_joint_data = data[:, :2]  # [16,2]
+        other_joints_data = data[:, 2:]  # [16,26]
+        for i, val in enumerate(other_joints_data):
+            for j in range(13):
+                val[2*j: 2*(j+1)] = torch.sub(val[2*j: 2*(j+1)], neck_joint_data)
+        return torch.cat((neck_joint_data, other_joints_data), 1)
 
-def data_loader_lstm_vel(args, data, fname):
-    dataset = LSTM_VEL_DataLoader(args, data, fname)
+
+def data_loader_de_predict(args, data, fname):
+    dataset = DE_Predict_DataLoader(args, data, fname)
     dataloader = torch.utils.data.DataLoader(
         dataset, batch_size=args.batch_size, shuffle=args.loader_shuffle,
         pin_memory=args.pin_memory)
