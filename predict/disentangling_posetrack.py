@@ -1,7 +1,7 @@
 import argparse
 import torch
 import torch.nn as nn
-from utils import set_loader, set_model, load_model, AverageMeter, speed2pos, ADE_c, FDE_c
+from utils import set_dataloader, set_model, load_model, AverageMeter, speed2pos, ADE_c, FDE_c
 import time
 import sys
 
@@ -78,9 +78,10 @@ def regenerate_entire_pose(global_pose: torch.Tensor, local_pose: torch.Tensor):
 
 if __name__ == '__main__':
     opt = parse_option()
-    _, val_loader = set_loader(opt)
-    model = set_model(opt)
+    _, val_loader = set_dataloader(opt)
+    global_model, local_model = set_model(opt)
     if opt.load_ckpt is not None:
-        model = load_model(opt, model)
+        global_model = load_model(opt, global_model)
+        local_model = local_model(opt, local_model)
 
-    predict(val_loader, model)
+    predict(val_loader, global_model, local_model)

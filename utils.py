@@ -80,7 +80,7 @@ def set_scheduler(opt, optimizer):
     return optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=opt.lr_decay_rate, patience=10, threshold=1e-8,
                                                 verbose=True)
 
-
+# TODO: handle bug
 def set_dataloader(opt):
     if opt.model_name == 'lstm_vel':
         train_loader = data_loader(opt, "train", opt.dataset_name + "_")

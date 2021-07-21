@@ -1,7 +1,7 @@
 import argparse
 import torch
 import torch.nn as nn
-from utils import set_loader, set_model, load_model, AverageMeter, speed2pos, ADE_c, FDE_c
+from utils import set_dataloader, set_model, load_model, AverageMeter, speed2pos, ADE_c, FDE_c
 import time
 import sys
 
@@ -64,7 +64,7 @@ def predict(loader, model):
 
 if __name__ == '__main__':
     opt = parse_option()
-    _, val_loader = set_loader(opt)
+    _, val_loader = set_dataloader(opt)
     model = set_model(opt)
     if opt.load_ckpt is not None:
         model = load_model(opt, model)
