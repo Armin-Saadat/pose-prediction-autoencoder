@@ -14,7 +14,7 @@ class Option:
         self.hidden_size = 1000
         self.hardtanh_limit = 100
         self.dataset_name = 'posetrack'  # choices=['posetrack', '3dpw']
-        self.model_name = 'lstm_vel'  # choices=['lstm_vel', 'disentangling']
+        self.model_name = 'lstm_vel'  # choices=['lstm_vel', 'de_local', 'de_global']
         self.input = 16
         self.output = 14
         self.save_folder = 'snapshots'
@@ -24,7 +24,7 @@ class Option:
         self.skip = 1
 
 
-def parse_option():
+def parse_option(model_name, dataset_name):
     parser = argparse.ArgumentParser('argument for training')
     parser.add_argument('--batch_size', type=int, default=80, help='batch_size')
     parser.add_argument('--num_workers', type=int, default=1, help='num of workers to use')
@@ -38,8 +38,8 @@ def parse_option():
     parser.add_argument('--hardtanh_limit', type=int, default=100)
     parser.add_argument('--input', type=int, default=16)
     parser.add_argument('--output', type=int, default=14)
-    parser.add_argument('--model_name', type=str, default='lstm_vel', choices=['lstm_vel', 'de_global', 'de_local'])
-    parser.add_argument('--dataset_name', type=str, default='posetrack', choices=['posetrack', '3dpw'])
+    # parser.add_argument('--model_name', type=str, default='lstm_vel', choices=['lstm_vel', 'de_global', 'de_local'])
+    # parser.add_argument('--dataset_name', type=str, default='posetrack', choices=['posetrack', '3dpw'])
     parser.add_argument('--save_folder', type=str, default='snapshots')
     parser.add_argument('--save_freq', type=int, default=200)
     parser.add_argument('--load_ckpt', type=str)
@@ -47,4 +47,6 @@ def parse_option():
     opt = parser.parse_args()
     opt.stride = opt.input
     opt.skip = 1
+    opt.model_name = model_name
+    opt.dataset_name = dataset_name
     return opt

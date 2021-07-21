@@ -257,10 +257,7 @@ def train_3dpw(train_loader, val_loader, model, optimizer, scheduler, opt):
               '| ade_train: %.2f' % ade_train.avg,
               '| ade_val: %.2f' % ade_val.avg, '| fde_train: %.2f' % fde_train.avg, '| fde_val: %.2f' % fde_val.avg,
               '| epoch_time.avg:%.2f' % (time.time() - start))
-
     print('*' * 100)
-    # print('Saving ...')
-    # torch.save(net.state_dict(), args.model_path)
     print('TRAINING 3dpw DONE in {} !'.format(time.time() - training_start))
 
 
@@ -270,13 +267,9 @@ if __name__ == '__main__':
     model = set_model(opt)
     if opt.load_ckpt is not None:
         model = load_model(opt, model)
-
     optimizer = set_optimizer(opt, model)
     scheduler = set_scheduler(opt, optimizer)
     if opt.dataset_name == 'posetrack':
-        if opt.model_name == 'disentangling':
-            train_global_disentangling(train_loader, val_loader, model, optimizer, scheduler, opt)
-        else:
-            train_postrack(train_loader, val_loader, model, optimizer, scheduler, opt)
+        train_postrack(train_loader, val_loader, model, optimizer, scheduler, opt)
     else:
         train_3dpw(train_loader, val_loader, model, optimizer, scheduler, opt)
