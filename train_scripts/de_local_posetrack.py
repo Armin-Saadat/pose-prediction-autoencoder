@@ -88,7 +88,7 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
 
 
 if __name__ == '__main__':
-    opt = parse_option('lstm_vel', 'posetrack')
+    opt = parse_option('de_local', 'posetrack')
     train_loader, val_loader = set_dataloader(opt)
     model = set_model(opt)
     if opt.load_ckpt is not None:
