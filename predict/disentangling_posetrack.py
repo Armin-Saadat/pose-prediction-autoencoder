@@ -1,7 +1,7 @@
 import argparse
 import torch
 import torch.nn as nn
-from utils import set_dataloader, set_model, load_model, AverageMeter, speed2pos
+from utils import set_dataloader, set_model, load_model, AverageMeter, speed2pos, speed2pos_local
 from metrices import ADE_c, FDE_c
 import time
 import sys
@@ -58,7 +58,7 @@ def predict(loader, global_model, local_model):
             avg_epoch_val_speed_loss.update(val=float(global_speed_loss + local_speed_loss))
 
             global_pose_pred = speed2pos(global_vel_preds, global_pose_obs)
-            local_pose_pred = speed2pos(local_vel_preds, local_pose_obs)
+            local_pose_pred = speed2pos_local(local_vel_preds, local_pose_obs)
             # now we have to make a prediction
             pose_pred = regenerate_entire_pose(global_pose_pred, local_pose_pred)
             ade_val.update(val=float(ADE_c(pose_pred, target_pose)))
