@@ -1,9 +1,11 @@
 import argparse
 import torch
 import torch.nn as nn
-from utils import set_dataloader, set_model, load_model, AverageMeter, speed2pos, ADE_c, FDE_c
+from utils import set_dataloader, set_model, load_model, AverageMeter, speed2pos
+from metrices import ADE_c, FDE_c
 import time
 import sys
+
 
 def parse_option():
     parser = argparse.ArgumentParser('argument for predictions')
@@ -26,7 +28,6 @@ def predict(loader, model):
     l1e = nn.L1Loss()
     bce = nn.BCELoss()
     val_s_scores = []
-
 
     start = time.time()
     avg_epoch_val_speed_loss = AverageMeter()

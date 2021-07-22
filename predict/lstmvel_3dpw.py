@@ -2,7 +2,8 @@ import argparse
 import torch
 import torch.nn as nn
 import time
-from utils import set_dataloader, set_model, load_model, AverageMeter, speed2pos3d, ADE_3d, FDE_3d
+from utils import set_dataloader, set_model, load_model, AverageMeter, speed2pos3d
+from metrices import ADE_3d, FDE_3d
 import sys
 
 
@@ -38,7 +39,7 @@ def predict(loader, model):
         obs_pose = obs_pose.to(device='cuda')
         target_pose = target_pose.to(device='cuda')
         with torch.no_grad():
-            (speed_preds, ) = model(pose=obs_pose, vel=obs_s)
+            (speed_preds,) = model(pose=obs_pose, vel=obs_s)
 
             speed_loss = l1e(speed_preds, target_s)
 
