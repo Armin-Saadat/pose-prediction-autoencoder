@@ -56,8 +56,11 @@ def set_model(opt):
             return None
 
 
-def load_model(opt, model):
-    ckpt = torch.load(opt.load_ckpt, map_location='cpu')
+def load_model(opt, model, load_ckpt=None):
+    if load_ckpt:
+        ckpt = torch.load(load_ckpt, map_location='cpu')
+    else:
+        ckpt = torch.load(opt.load_ckpt, map_location='cpu')
     state_dict = ckpt['model']
     if torch.cuda.is_available():
         new_state_dict = {}

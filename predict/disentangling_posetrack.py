@@ -1,7 +1,8 @@
 import argparse
 import torch
 import torch.nn as nn
-from utils import set_dataloader, set_model, load_model, AverageMeter, speed2pos, ADE_c, FDE_c
+from utils import set_dataloader, set_model, load_model, AverageMeter, speed2pos
+from metrices import ADE_c, FDE_c
 import time
 import sys
 
@@ -12,13 +13,18 @@ def parse_option():
     parser.add_argument('--input', type=int, default=16)
     parser.add_argument('--output', type=int, default=14)
     parser.add_argument('--hidden_size', type=int, default=1000)
+    parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--hardtanh_limit', type=int, default=100)
-    parser.add_argument('--load_ckpt', type=str)
+    parser.add_argument('--load_local_ckpt', type=str)
+    parser.add_argument('--load_global_ckpt', type=str)
+
 
     opt = parser.parse_args()
     opt.stride = opt.input
     opt.skip = 1
     opt.dataset_name = 'posetrack'
+    opt.loader_shuffle = True
+    opt.pin_memory = False
     return opt
 
 
@@ -80,13 +86,13 @@ if __name__ == '__main__':
     opt = parse_option()
     opt.model_name = 'de_predict'
     _, val_loader = set_dataloader(opt)
-    opt.model__name = 'de_global'
+    opt.model_name = 'de_global'
     global_model = set_model(opt)
     opt.model_name = 'de_local'
     local_model = set_model(opt)
-    if opt.load_ckpt is not None:
-        global_model = load_model(opt, global_model)
-        local_model = load_model(opt, local_model)
+    if opt.load_local_ckpt is not None:
+        global_model = load_model(opt, global_model, opt.load_global_ckpt)
+        local_model = load_model(opt, local_model, opt.load_local_ckpt)
     else:
         raise EnvironmentError
     predict(val_loader, global_model, local_model)
