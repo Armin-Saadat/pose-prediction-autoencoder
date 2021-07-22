@@ -22,6 +22,7 @@ def parse_option():
     opt.skip = 1
     opt.dataset_name = 'posetrack'
     opt.loader_shuffle = True
+    opt.pin_memory = False
     opt.model_name = 'lstm_vel'
     return opt
 
