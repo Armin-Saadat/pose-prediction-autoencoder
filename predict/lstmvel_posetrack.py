@@ -21,6 +21,7 @@ def parse_option():
     opt.stride = opt.input
     opt.skip = 1
     opt.dataset_name = 'posetrack'
+    opt.loader_shuffle = True
     opt.model_name = 'lstm_vel'
     return opt
 
