@@ -38,7 +38,7 @@ def predict(loader, model):
 
     ade_val = AverageMeter()
     fde_val = AverageMeter()
-    for idx, (obs_s, target_s, obs_pose, target_pose, obs_mask, target_mask) in loader:
+    for idx, (obs_s, target_s, obs_pose, target_pose, obs_mask, target_mask) in enumerate(loader):
         obs_s = obs_s.to(device='cuda')
         target_s = target_s.to(device='cuda')
         obs_pose = obs_pose.to(device='cuda')
