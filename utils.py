@@ -125,6 +125,16 @@ def speed2pos(preds, obs_p):
 
     return pred_pos
 
+def speed2poslocal(preds, obs_p):
+    pred_pos = torch.zeros(preds.shape[0], preds.shape[1], preds.shape[2]).to('cuda')
+    current = obs_p[:, -1, :]
+
+    for i in range(preds.shape[1]):
+        pred_pos[:, i, :] = current + preds[:, i, :]
+        current = pred_pos[:, i, :]
+
+    return pred_pos
+
 
 def speed2pos3d(preds, obs_p):
     pred_pos = torch.zeros(preds.shape[0], preds.shape[1], preds.shape[2]).to('cuda')

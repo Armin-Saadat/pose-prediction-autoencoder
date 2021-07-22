@@ -60,9 +60,9 @@ def predict(loader, global_model, local_model):
             global_pose_pred = speed2pos(global_vel_preds, global_pose_obs)
             local_pose_pred = speed2pos(local_vel_preds, local_pose_obs)
             # now we have to make a prediction
-            pred_pose = regenerate_entire_pose(global_pose_pred, local_pose_pred)
-            ade_val.update(val=float(ADE_c(pred_pose, target_pose)))
-            fde_val.update(val=float(FDE_c(pred_pose, target_pose)))
+            pose_pred = regenerate_entire_pose(global_pose_pred, local_pose_pred)
+            ade_val.update(val=float(ADE_c(pose_pred, target_pose)))
+            fde_val.update(val=FDE_c(pose_pred, target_pose))
 
     val_s_scores.append(avg_epoch_val_speed_loss.avg)
     print('| validation_speed_loss: %.2f' % avg_epoch_val_speed_loss.avg,
@@ -76,7 +76,7 @@ def regenerate_entire_pose(global_pose: torch.Tensor, local_pose: torch.Tensor):
     for i in range(len(local_pose)):  # iterate over batch size
         for j, pose in enumerate(local_pose[i]):  # iterate over frames
             for k in range(13):
-                pose[2 * k:2 * (k + 1)] = torch.add(global_pose[i][j], pose[2 * k:2 * (k + 1)])
+                pose[2 * k:2 * (k + 1)] = torch.add(pose[2 * k:2 * (k + 1)], global_pose[i][j], )
     return torch.cat((global_pose, local_pose), 2)
 
 

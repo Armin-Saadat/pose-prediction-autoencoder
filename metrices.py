@@ -2,7 +2,9 @@ import torch
 import numpy as np
 
 
-def ADE_c(pred, true):
+def ADE_c(pred, true, pred_mask=None):
+    if pred_mask:
+        pred = np.where(abs(pred_mask) < 0.5, 0, pred)
     b, n, p = pred.size()[0], pred.size()[1], pred.size()[2]
     pred = torch.reshape(pred, (b, n, int(p / 2), 2))
     true = torch.reshape(true, (b, n, int(p / 2), 2))
@@ -11,7 +13,9 @@ def ADE_c(pred, true):
     return ade
 
 
-def FDE_c(pred, true):
+def FDE_c(pred, true, pred_mask=None):
+    if pred_mask:
+        pred = np.where(abs(pred_mask) < 0.5, 0, pred)
     b, n, p = pred.size()[0], pred.size()[1], pred.size()[2]
     pred = torch.reshape(pred, (b, n, int(p / 2), 2))
     true = torch.reshape(true, (b, n, int(p / 2), 2))
