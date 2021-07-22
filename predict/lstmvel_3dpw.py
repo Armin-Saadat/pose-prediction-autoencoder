@@ -13,6 +13,7 @@ def parse_option():
     parser.add_argument('--input', type=int, default=16)
     parser.add_argument('--output', type=int, default=14)
     parser.add_argument('--hidden_size', type=int, default=1000)
+    parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--hardtanh_limit', type=int, default=100)
     parser.add_argument('--load_ckpt', type=str)
 
