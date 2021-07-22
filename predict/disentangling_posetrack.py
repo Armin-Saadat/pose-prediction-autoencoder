@@ -18,7 +18,6 @@ def parse_option():
     parser.add_argument('--load_local_ckpt', type=str)
     parser.add_argument('--load_global_ckpt', type=str)
 
-
     opt = parser.parse_args()
     opt.stride = opt.input
     opt.skip = 1
@@ -39,17 +38,18 @@ def predict(loader, global_model, local_model):
 
     ade_val = AverageMeter()
     fde_val = AverageMeter()
-    for idx, (obs_velocities, target_velocities, obs_pose, target_pose, obs_mask, target_mask) in loader:
-        global_vel_obs = obs_velocities[:, :, 2].to(device='cuda')
+    for idx, (obs_velocities, target_velocities, obs_pose, target_pose, obs_mask, target_mask) in enumerate(loader):
+        global_vel_obs = obs_velocities[:, :, :2].to(device='cuda')
         local_vel_obs = obs_velocities[:, :, 2:].to(device='cuda')
-        global_vel_targets = target_velocities[:, :, 2].to(device='cuda')
+        global_vel_targets = target_velocities[:, :, :2].to(device='cuda')
         local_vel_targets = target_velocities[:, :, 2:].to(device='cuda')
-        global_pose_obs = obs_pose[:, :, 2].to(device='cuda')
-        local_pose_obs = obs_pose[:, :, 2].to(device='cuda')
+        global_pose_obs = obs_pose[:, :, :2].to(device='cuda')
+        local_pose_obs = obs_pose[:, :, 2:].to(device='cuda')
+        target_pose = target_pose.to(device='cuda')
         mask_obs = obs_mask.to(device='cuda')
         mask_target = target_mask.to(device='cuda')
         with torch.no_grad():
-            (global_vel_preds, _) = global_model(pose=global_pose_obs, vel=global_vel_obs)
+            global_vel_preds = global_model(pose=global_pose_obs, vel=global_vel_obs)
             (local_vel_preds, mask_preds) = local_model(pose=local_pose_obs, vel=local_vel_obs, mask=mask_obs)
             local_speed_loss = l1e(local_vel_preds, local_vel_targets)
             global_speed_loss = l1e(global_vel_preds, global_vel_targets)
@@ -59,10 +59,8 @@ def predict(loader, global_model, local_model):
 
             global_pose_pred = speed2pos(global_vel_preds, global_pose_obs)
             local_pose_pred = speed2pos(local_vel_preds, local_pose_obs)
-
             # now we have to make a prediction
             pred_pose = regenerate_entire_pose(global_pose_pred, local_pose_pred)
-
             ade_val.update(val=float(ADE_c(pred_pose, target_pose)))
             fde_val.update(val=float(FDE_c(pred_pose, target_pose)))
 
@@ -75,10 +73,10 @@ def predict(loader, global_model, local_model):
 
 
 def regenerate_entire_pose(global_pose: torch.Tensor, local_pose: torch.Tensor):
-    for i in len(local_pose):  # iterate over batch size
+    for i in range(len(local_pose)):  # iterate over batch size
         for j, pose in enumerate(local_pose[i]):  # iterate over frames
             for k in range(13):
-                pose[2*k:2*(k+1)] = torch.add(global_pose[i][j], pose[2*k:2*(k+1)])
+                pose[2 * k:2 * (k + 1)] = torch.add(global_pose[i][j], pose[2 * k:2 * (k + 1)])
     return torch.cat((global_pose, local_pose), 2)
 
 

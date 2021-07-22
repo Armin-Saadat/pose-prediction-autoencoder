@@ -29,7 +29,7 @@ class DE_Predict_DataLoader(torch.utils.data.Dataset):
         outputs = []
         obs = torch.tensor([seq.Pose[i] for i in range(0, self.args.input, self.args.skip)])
         obs = self.create_pred_vals(obs)
-        obs_speed = (obs[1:, 2:] - obs[:-1, 2:])
+        obs_speed = (obs[1:] - obs[:-1])
 
         true = torch.tensor([seq.Future_Pose[i] for i in range(0, self.args.output, self.args.skip)])
         true = self.create_pred_vals(true)
