@@ -2,25 +2,25 @@ import torch
 import numpy as np
 
 
-def ADE_c(pred, true, pred_mask=None):
+def ADE_c(pred_pose, target_pose, pred_mask=None):
     if pred_mask:
-        pred = np.where(abs(pred_mask) < 0.5, 0, pred)
-    b, n, p = pred.size()[0], pred.size()[1], pred.size()[2]
-    pred = torch.reshape(pred, (b, n, int(p / 2), 2))
-    true = torch.reshape(true, (b, n, int(p / 2), 2))
-    displacement = torch.sqrt((pred[:, :, :, 0] - true[:, :, :, 0]) ** 2 + (pred[:, :, :, 1] - true[:, :, :, 1]) ** 2)
+        pred_pose = np.where(abs(pred_mask) < 0.5, 0, pred_pose)
+    b, n, p = pred_pose.size()[0], pred_pose.size()[1], pred_pose.size()[2]
+    pred_pose = torch.reshape(pred_pose, (b, n, int(p / 2), 2))
+    target_pose = torch.reshape(target_pose, (b, n, int(p / 2), 2))
+    displacement = torch.sqrt((pred_pose[:, :, :, 0] - target_pose[:, :, :, 0]) ** 2 + (pred_pose[:, :, :, 1] - target_pose[:, :, :, 1]) ** 2)
     ade = torch.mean(torch.mean(displacement, dim=1))
     return ade
 
 
-def FDE_c(pred, true, pred_mask=None):
+def FDE_c(pred_pose, target_pose, pred_mask=None):
     if pred_mask:
-        pred = np.where(abs(pred_mask) < 0.5, 0, pred)
-    b, n, p = pred.size()[0], pred.size()[1], pred.size()[2]
-    pred = torch.reshape(pred, (b, n, int(p / 2), 2))
-    true = torch.reshape(true, (b, n, int(p / 2), 2))
+        pred_pose = np.where(abs(pred_mask) < 0.5, 0, pred_pose)
+    b, n, p = pred_pose.size()[0], pred_pose.size()[1], pred_pose.size()[2]
+    pred_pose = torch.reshape(pred_pose, (b, n, int(p / 2), 2))
+    target_pose = torch.reshape(target_pose, (b, n, int(p / 2), 2))
     displacement = torch.sqrt(
-        (pred[:, -1, :, 0] - true[:, -1, :, 0]) ** 2 + (pred[:, -1, :, 1] - true[:, -1, :, 1]) ** 2)
+        (pred_pose[:, -1, :, 0] - target_pose[:, -1, :, 0]) ** 2 + (pred_pose[:, -1, :, 1] - target_pose[:, -1, :, 1]) ** 2)
     fde = torch.mean(torch.mean(displacement, dim=1))
     return fde
 

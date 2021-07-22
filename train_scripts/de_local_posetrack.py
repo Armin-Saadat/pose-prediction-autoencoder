@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 
 from metrices import ADE_c, FDE_c
-from utils import speed2poslocal, AverageMeter
+from utils import speed2posLocal, AverageMeter
 from utils import set_dataloader, set_model, set_optimizer, set_scheduler, save_model, load_model
 from option import parse_option
 
@@ -39,7 +39,7 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
             speed_loss = l1e(speed_preds, target_s)
             mask_loss = bce(mask_preds, target_mask)
 
-            preds_p = speed2poslocal(speed_preds, obs_pose)
+            preds_p = speed2posLocal(speed_preds, obs_pose)
             ade_train.update(val=float(ADE_c(preds_p, target_pose)))
             fde_train.update(val=FDE_c(preds_p, target_pose))
 
@@ -69,7 +69,7 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
                 mask_loss = bce(mask_preds, target_mask)
                 avg_epoch_val_speed_loss.update(val=float(speed_loss))
                 avg_epoch_val_pose_loss.update(val=float(mask_loss))
-                preds_p = speed2poslocal(speed_preds, obs_pose)
+                preds_p = speed2posLocal(speed_preds, obs_pose)
                 ade_val.update(val=float(ADE_c(preds_p, target_pose)))
                 fde_val.update(val=float(FDE_c(preds_p, target_pose)))
 

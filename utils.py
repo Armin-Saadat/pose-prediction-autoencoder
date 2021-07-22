@@ -106,6 +106,9 @@ def set_dataloader(opt):
     elif opt.model_name == 'de_predict':
         train_loader = None
         validation_loader = data_loader_de_predict(opt, "valid", opt.dataset_name + "_")
+    else:
+        train_loader = None
+        validation_loader = None
     return train_loader, validation_loader
 
 
@@ -125,7 +128,8 @@ def speed2pos(preds, obs_p):
 
     return pred_pos
 
-def speed2poslocal(preds, obs_p):
+
+def speed2posLocal(preds, obs_p):
     pred_pos = torch.zeros(preds.shape[0], preds.shape[1], preds.shape[2]).to('cuda')
     current = obs_p[:, -1, :]
 
