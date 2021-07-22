@@ -129,7 +129,7 @@ def speed2pos(preds, obs_p):
     return pred_pos
 
 
-def speed2posLocal(preds, obs_p):
+def speed2pos_local(preds, obs_p):
     pred_pos = torch.zeros(preds.shape[0], preds.shape[1], preds.shape[2]).to('cuda')
     current = obs_p[:, -1, :]
 
