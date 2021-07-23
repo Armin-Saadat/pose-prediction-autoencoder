@@ -13,7 +13,6 @@ from utils.option import parse_option
 def train(train_loader, val_loader, model, optimizer, scheduler, opt):
     training_start = time.time()
     l1e = nn.L1Loss()
-    bce = nn.BCELoss()
     train_s_scores = []
     val_s_scores = []
     for epoch in range(1, opt.epochs + 1):
