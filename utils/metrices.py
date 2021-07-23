@@ -111,3 +111,12 @@ def VAM(GT, pred, occ_cutoff, pred_visib):
         else:
             seq_err.append(f_err)
     return np.array(seq_err)
+
+
+def mask_validation(preds, trues):
+    zeros = torch.zeros_like(preds)
+    ones = torch.ones_like(preds)
+    preds = torch.where(preds > 0.5, ones, zeros)
+    n_zeros = torch.sum((preds == trues) * (preds == 0))
+    n_ones = torch.sum((preds == trues) * (preds == 1))
+    return (n_ones + n_zeros) / torch.numel(preds)
