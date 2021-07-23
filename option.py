@@ -50,7 +50,7 @@ def parse_option(model_name, dataset_name):
     opt.stride = opt.input
     opt.skip = 1
     if opt.save_freq == 198:
-        opt.save_freq = opt.epochs
+        opt.save_freq = opt.epochs - 1
     opt.model_name = model_name
     opt.dataset_name = dataset_name
     return opt
