@@ -9,10 +9,13 @@ import sys
 
 def parse_option():
     parser = argparse.ArgumentParser('argument for predictions')
+    parser.add_argument('--device', type=str, default='cuda')
     parser.add_argument('--input', type=int, default=16)
     parser.add_argument('--output', type=int, default=14)
     parser.add_argument('--batch_size', type=int, default=64)
     opt = parser.parse_args()
+    opt.stride = opt.input
+    opt.skip = 1
     opt.dataset_name = 'posetrack'
     opt.loader_shuffle = True
     opt.pin_memory = False
