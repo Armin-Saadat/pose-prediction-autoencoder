@@ -2,25 +2,23 @@ import torch
 import numpy as np
 
 
-def ADE_c(pred_pose, target_pose, pred_mask=None):
-    if pred_mask:
-        pred_pose = np.where(abs(pred_mask) < 0.5, 0, pred_pose)
-    b, n, p = pred_pose.size()[0], pred_pose.size()[1], pred_pose.size()[2]
-    pred_pose = torch.reshape(pred_pose, (b, n, int(p / 2), 2))
-    target_pose = torch.reshape(target_pose, (b, n, int(p / 2), 2))
-    displacement = torch.sqrt((pred_pose[:, :, :, 0] - target_pose[:, :, :, 0]) ** 2 + (pred_pose[:, :, :, 1] - target_pose[:, :, :, 1]) ** 2)
-    ade = torch.mean(torch.mean(displacement, dim=1))
-    return ade
-
-
-def FDE_c(pred_pose, target_pose, pred_mask=None):
-    if pred_mask:
-        pred_pose = np.where(abs(pred_mask) < 0.5, 0, pred_pose)
+def ADE_c(pred_pose, target_pose):
     b, n, p = pred_pose.size()[0], pred_pose.size()[1], pred_pose.size()[2]
     pred_pose = torch.reshape(pred_pose, (b, n, int(p / 2), 2))
     target_pose = torch.reshape(target_pose, (b, n, int(p / 2), 2))
     displacement = torch.sqrt(
-        (pred_pose[:, -1, :, 0] - target_pose[:, -1, :, 0]) ** 2 + (pred_pose[:, -1, :, 1] - target_pose[:, -1, :, 1]) ** 2)
+        (pred_pose[:, :, :, 0] - target_pose[:, :, :, 0]) ** 2 + (pred_pose[:, :, :, 1] - target_pose[:, :, :, 1]) ** 2)
+    ade = torch.mean(torch.mean(displacement, dim=1))
+    return ade
+
+
+def FDE_c(pred_pose, target_pose):
+    b, n, p = pred_pose.size()[0], pred_pose.size()[1], pred_pose.size()[2]
+    pred_pose = torch.reshape(pred_pose, (b, n, int(p / 2), 2))
+    target_pose = torch.reshape(target_pose, (b, n, int(p / 2), 2))
+    displacement = torch.sqrt(
+        (pred_pose[:, -1, :, 0] - target_pose[:, -1, :, 0]) ** 2 + (
+                pred_pose[:, -1, :, 1] - target_pose[:, -1, :, 1]) ** 2)
     fde = torch.mean(torch.mean(displacement, dim=1))
     return fde
 
@@ -113,10 +111,11 @@ def VAM(GT, pred, occ_cutoff, pred_visib):
     return np.array(seq_err)
 
 
-def mask_validation(preds, trues):
+def mask_accuracy(preds, trues):
     zeros = torch.zeros_like(preds)
     ones = torch.ones_like(preds)
     preds = torch.where(preds > 0.5, ones, zeros)
-    n_zeros = torch.sum((preds == trues) * (preds == 0))
-    n_ones = torch.sum((preds == trues) * (preds == 1))
-    return (n_ones + n_zeros) / torch.numel(preds)
+    # n_zeros = torch.sum((preds == trues) * (preds == 0))
+    # n_ones = torch.sum((preds == trues) * (preds == 1))
+    # return (n_ones + n_zeros) / torch.numel(preds)
+    return torch.sum(preds == trues) / torch.numel(preds)
