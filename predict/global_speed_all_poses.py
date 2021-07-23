@@ -2,7 +2,7 @@ import argparse
 import torch
 import torch.nn as nn
 from utils.others import set_dataloader, set_model, load_model, AverageMeter, speed2pos
-from utils.metrices import ADE_c, FDE_c
+from utils.metrices import ADE_c, FDE_c, mask_accuracy
 import time
 import sys
 
@@ -33,40 +33,51 @@ def predict(loader, global_model):
     l1e = nn.L1Loss()
     bce = nn.BCELoss()
     start = time.time()
-    avg_epoch_global_speed_loss = AverageMeter()
+    avg_epoch_speed_loss = AverageMeter()
     avg_epoch_mask_loss = AverageMeter()
+    avg_epoch_mask_acc = AverageMeter()
     ade_val = AverageMeter()
     fde_val = AverageMeter()
     for idx, (obs_velocities, target_velocities, obs_pose, target_pose, obs_mask, target_mask) in enumerate(loader):
         global_vel_obs = obs_velocities[:, :, :2].to(device='cuda')
-        global_vel_targets = target_velocities[:, :, :2].to(device='cuda')
         global_pose_obs = obs_pose[:, :, :2].to(device='cuda')
         local_pose_obs = obs_pose[:, :, 2:].to(device='cuda')
         target_pose = target_pose.to(device='cuda')
         obs_mask = obs_mask.to(device='cuda')
         mask_target = target_mask.to(device='cuda')
         with torch.no_grad():
-            vel = global_vel_preds = global_model(pose=global_pose_obs, vel=global_vel_obs)
-            local_vel_preds = torch.cat((vel, vel, vel, vel, vel, vel, vel, vel, vel, vel, vel, vel, vel), 2)
+            global_vel_preds = global_model(pose=global_pose_obs, vel=global_vel_obs)
+            local_vel_preds = torch.zeros(mask_target.shape[0], 14, 26)
             m = obs_mask[:, -1:, :]
             mask_preds = torch.cat((m, m, m, m, m, m, m, m, m, m, m, m, m, m), 1)
-            global_speed_loss = l1e(global_vel_preds, global_vel_targets)
+
             mask_loss = bce(mask_preds, mask_target)
-            avg_epoch_global_speed_loss.update(val=float(global_speed_loss), n=global_vel_targets.shape[0])
             avg_epoch_mask_loss.update(val=float(mask_loss), n=mask_target.shape[0])
+
+            mask_acc = mask_accuracy(mask_preds, mask_target)
+            avg_epoch_mask_acc.update(val=float(mask_acc), n=mask_target.shape[0])
 
             global_pose_pred = speed2pos(global_vel_preds, global_pose_obs)
             local_pose_pred = speed2pos(local_vel_preds, local_pose_obs)
 
-            pose_pred = torch.cat((global_pose_pred, local_pose_pred), 2)
+            pose_pred = regenerate_entire_pose(global_pose_pred, local_pose_pred)
             ade_val.update(val=float(ADE_c(pose_pred, target_pose)), n=target_pose.shape[0])
             fde_val.update(val=FDE_c(pose_pred, target_pose), n=target_pose.shape[0])
 
-    print('| speed_loss: %.2f' % avg_epoch_global_speed_loss.avg,
+    print('| speed_loss: %.2f' % avg_epoch_speed_loss.avg,
           '| mask_loss: %.2f' % avg_epoch_mask_loss.avg,
+          '| mask_acc: %.2f' % avg_epoch_mask_acc.avg,
           '| ade_val: %.2f' % ade_val.avg, '| fde_val: %.2f' % fde_val.avg,
           '| epoch_time.avg:%.2f' % (time.time() - start))
     sys.stdout.flush()
+
+
+def regenerate_entire_pose(global_pose: torch.Tensor, local_pose: torch.Tensor):
+    for i in range(len(local_pose)):  # iterate over batch size
+        for j, pose in enumerate(local_pose[i]):  # iterate over frames
+            for k in range(13):
+                pose[2 * k:2 * (k + 1)] = torch.add(pose[2 * k:2 * (k + 1)], global_pose[i][j], )
+    return torch.cat((global_pose, local_pose), 2)
 
 
 if __name__ == '__main__':

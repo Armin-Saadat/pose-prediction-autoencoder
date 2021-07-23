@@ -2,7 +2,7 @@ import argparse
 import torch
 import torch.nn as nn
 from utils.others import set_dataloader, set_model, load_model, AverageMeter, speed2pos, speed2pos_local
-from utils.metrices import ADE_c, FDE_c
+from utils.metrices import ADE_c, FDE_c, mask_accuracy
 import time
 import sys
 
@@ -37,6 +37,7 @@ def predict(loader, global_model, local_model):
     start = time.time()
     avg_epoch_speed_loss = AverageMeter()
     avg_epoch_mask_loss = AverageMeter()
+    avg_epoch_mask_acc = AverageMeter()
     ade_val = AverageMeter()
     fde_val = AverageMeter()
     for idx, (obs_velocities, target_velocities, obs_pose, target_pose, obs_mask, target_mask) in enumerate(loader):
@@ -54,10 +55,14 @@ def predict(loader, global_model, local_model):
             (local_vel_preds, mask_preds) = local_model(pose=local_pose_obs, vel=local_vel_obs, mask=obs_mask)
             local_speed_loss = l1e(local_vel_preds, local_vel_targets)
             global_speed_loss = l1e(global_vel_preds, global_vel_targets)
-            mask_loss = bce(mask_preds, mask_target)
-            avg_epoch_mask_loss.update(val=float(mask_loss), n=mask_target.shape[0])
             avg_epoch_speed_loss.update(val=float((global_speed_loss + 13 * local_speed_loss) / 14),
                                         n=global_vel_targets.shape[0])
+
+            mask_loss = bce(mask_preds, mask_target)
+            avg_epoch_mask_loss.update(val=float(mask_loss), n=mask_target.shape[0])
+
+            mask_acc = mask_accuracy(mask_preds, mask_target)
+            avg_epoch_mask_acc.update(val=float(mask_acc), n=mask_target.shape[0])
 
             global_pose_pred = speed2pos(global_vel_preds, global_pose_obs)
             local_pose_pred = speed2pos_local(local_vel_preds, local_pose_obs)
@@ -68,6 +73,7 @@ def predict(loader, global_model, local_model):
 
     print('| speed_loss: %.2f' % avg_epoch_speed_loss.avg,
           '| mask_loss: %.2f' % avg_epoch_mask_loss.avg,
+          '| mask_acc: %.2f' % avg_epoch_mask_acc.avg,
           '| ade_val: %.2f' % ade_val.avg, '| fde_val: %.2f' % fde_val.avg,
           '| epoch_time.avg:%.2f' % (time.time() - start))
     sys.stdout.flush()

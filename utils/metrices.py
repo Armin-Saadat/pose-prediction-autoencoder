@@ -27,7 +27,8 @@ def ADE_3d(pred, target):
     b, n, p = pred.size()[0], pred.size()[1], pred.size()[2]
     pred = torch.reshape(pred, (b, n, int(p / 3), 3))
     target = torch.reshape(target, (b, n, int(p / 3), 3))
-    displacement = torch.sqrt((pred[:, :, :, 0] - target[:, :, :, 0]) ** 2 + (pred[:, :, :, 1] - target[:, :, :, 1]) ** 2)
+    displacement = torch.sqrt(
+        (pred[:, :, :, 0] - target[:, :, :, 0]) ** 2 + (pred[:, :, :, 1] - target[:, :, :, 1]) ** 2)
     ade = torch.mean(torch.mean(displacement, dim=1))
     return ade
 
@@ -115,7 +116,4 @@ def mask_accuracy(pred, target):
     zeros = torch.zeros_like(pred)
     ones = torch.ones_like(pred)
     pred = torch.where(pred > 0.5, ones, zeros)
-    # n_zeros = torch.sum((preds == trues) * (preds == 0))
-    # n_ones = torch.sum((preds == trues) * (preds == 1))
-    # return (n_ones + n_zeros) / torch.numel(preds)
     return torch.sum(pred == target) / torch.numel(pred)
