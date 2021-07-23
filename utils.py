@@ -89,7 +89,7 @@ def set_optimizer(opt, model):
 
 
 def set_scheduler(opt, optimizer):
-    return optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=opt.lr_decay_rate, patience=40, threshold=1e-8,
+    return optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=opt.lr_decay_rate, patience=25, threshold=1e-8,
                                                 verbose=True)
 
 
