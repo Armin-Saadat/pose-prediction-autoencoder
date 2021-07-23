@@ -29,18 +29,19 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
             target_s = target_s.to(device='cuda')
             obs_pose = obs_pose.to(device='cuda')
             target_pose = target_pose.to(device='cuda')
+            batch_size = obs_s.shape[0]
             model.zero_grad()
 
-            (speed_preds,) = model(pose=obs_pose, vel=obs_s)
+            speed_preds = model(pose=obs_pose, vel=obs_s)
             speed_loss = l1e(speed_preds, target_s)
 
             preds_p = speed2pos3d(speed_preds, obs_pose)
-            ade_train.update(val=float(ADE_3d(preds_p, target_pose)))
-            fde_train.update(val=float(FDE_3d(preds_p, target_pose)))
+            ade_train.update(val=float(ADE_3d(preds_p, target_pose)), n=batch_size)
+            fde_train.update(val=float(FDE_3d(preds_p, target_pose)), n=batch_size)
 
             speed_loss.backward()
             optimizer.step()
-            avg_epoch_train_speed_loss.update(float(speed_loss))
+            avg_epoch_train_speed_loss.update(float(speed_loss), n=batch_size)
 
         train_s_scores.append(avg_epoch_train_speed_loss.avg)
         counter = 0
@@ -51,16 +52,17 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
             target_s = target_s.to(device='cuda')
             obs_pose = obs_pose.to(device='cuda')
             target_pose = target_pose.to(device='cuda')
+            batch_size = obs_s.shape[0]
 
             with torch.no_grad():
                 (speed_preds,) = model(pose=obs_pose, vel=obs_s)
 
                 speed_loss = l1e(speed_preds, target_s)
-                avg_epoch_val_speed_loss.update(float(speed_loss))
+                avg_epoch_val_speed_loss.update(float(speed_loss), n=batch_size)
 
                 preds_p = speed2pos3d(speed_preds, obs_pose)
-                ade_train.update(float(ADE_3d(preds_p, target_pose)))
-                fde_val.update(FDE_3d(preds_p, target_pose))
+                ade_train.update(float(ADE_3d(preds_p, target_pose)), n=batch_size)
+                fde_val.update(FDE_3d(preds_p, target_pose), n=batch_size)
 
         val_s_scores.append(avg_epoch_val_speed_loss.avg)
         scheduler.step(avg_epoch_train_speed_loss.avg)

@@ -86,7 +86,10 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
         print('e:', epoch, '| train_speed_loss: %.2f' % avg_epoch_train_speed_loss.avg,
               '| validation_speed_loss: %.2f' % avg_epoch_val_speed_loss.avg,
               '| train_mask_loss: %.2f' % avg_epoch_train_mask_loss.avg,
-              '| validation_mask_loss: %.2f' % avg_epoch_val_mask_loss.avg, '| ade_train: %.2f' % ade_train.avg,
+              '| validation_mask_loss: %.2f' % avg_epoch_val_mask_loss.avg,
+              '| train_mask_acc: %.2f' % avg_epoch_train_mask_acc.avg,
+              '| validation_mask_acc: %.2f' % avg_epoch_val_mask_acc.avg,
+              '| ade_train: %.2f' % ade_train.avg,
               '| ade_val: %.2f' % ade_val.avg, '| fde_train: %.2f' % fde_train.avg, '| fde_val: %.2f' % fde_val.avg,
               '| epoch_time.avg:%.2f' % (time.time() - start))
         sys.stdout.flush()
