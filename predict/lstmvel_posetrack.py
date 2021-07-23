@@ -59,8 +59,8 @@ def predict(loader, model):
             fde_val.update(val=float(FDE_c(preds_p, target_pose)))
 
     val_s_scores.append(avg_epoch_val_speed_loss.avg)
-    print('| validation_speed_loss: %.2f' % avg_epoch_val_speed_loss.avg,
-          '| validation_mask_loss: %.2f' % avg_epoch_val_pose_loss.avg,
+    print('| speed_loss: %.2f' % avg_epoch_val_speed_loss.avg,
+          '| mask_loss: %.2f' % avg_epoch_val_pose_loss.avg,
           '| ade_val: %.2f' % ade_val.avg, '| fde_val: %.2f' % fde_val.avg,
           '| epoch_time.avg:%.2f' % (time.time() - start))
     sys.stdout.flush()
