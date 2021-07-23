@@ -22,6 +22,7 @@ class Option:
         self.load_ckpt = load_ckpt
         self.stride = self.input
         self.skip = 1
+        self.n_layers = 1
 
 
 def parse_option(model_name, dataset_name):
@@ -44,6 +45,7 @@ def parse_option(model_name, dataset_name):
     parser.add_argument('--save_freq', type=int, default=200)
     parser.add_argument('--load_ckpt', type=str)
     parser.add_argument('--name', type=str)
+    parser.add_argument('--n_layers', type=int, default=1)
     opt = parser.parse_args()
     opt.stride = opt.input
     opt.skip = 1

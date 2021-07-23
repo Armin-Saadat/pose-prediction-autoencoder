@@ -7,3 +7,4 @@ jupyter
 pandas
 sklearn
 opencv-python
+git+https://github.com/salesforce/pytorch-qrnn

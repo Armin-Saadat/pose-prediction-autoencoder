@@ -1,10 +1,10 @@
 import torch
 import torch.optim as optim
 
-from models.lstm_vel_posetrack import LSTM_Vel_Posetrack
-from models.lstm_vel_3dpw import LSTM_Vel_3dpw
-from models.de_global_posetrack import DE_Global_Posetrack
-from models.de_local_posetrack import DE_Local_Posetrack
+from models.lstm_vel_posetrack import LSTMVelPosetrack
+from models.lstm_vel_3dpw import LSTMVel3dpw
+from models.de_global_posetrack import DEGlobalPosetrack
+from models.de_local_posetrack import DELocalPosetrack
 from dataloader.lstm_vel_dataloader import data_loader_lstm_vel
 from dataloader.de_global_dataloader import data_loader_de_global
 from dataloader.de_local_dataloader import data_loader_de_local
@@ -41,17 +41,17 @@ def get_model(opt):
 def set_model(opt):
     if opt.model_name == 'lstm_vel':
         if opt.dataset_name == 'posetrack':
-            return LSTM_Vel_Posetrack(opt).to(opt.device)
+            return LSTMVelPosetrack(opt).to(opt.device)
         else:
-            return LSTM_Vel_3dpw(opt).to(opt.device)
+            return LSTMVel3dpw(opt).to(opt.device)
     elif opt.model_name == 'de_global':
         if opt.dataset_name == 'posetrack':
-            return DE_Global_Posetrack(opt).to(opt.device)
+            return DEGlobalPosetrack(opt).to(opt.device)
         else:
             return None
     elif opt.model_name == 'de_local':
         if opt.dataset_name == 'posetrack':
-            return DE_Local_Posetrack(opt).to(opt.device)
+            return DELocalPosetrack(opt).to(opt.device)
         else:
             return None
 
