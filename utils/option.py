@@ -17,7 +17,7 @@ class Option:
         self.model_name = 'lstm_vel'  # choices=['lstm_vel', 'de_local', 'de_global']
         self.input = 16
         self.output = 14
-        self.save_folder = 'snapshots'
+        self.save_folder = '../snapshots'
         self.save_freq = 50
         self.load_ckpt = load_ckpt
         self.stride = self.input
