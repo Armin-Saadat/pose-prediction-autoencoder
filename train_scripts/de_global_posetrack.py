@@ -25,11 +25,11 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
         fde_val = AverageMeter()
 
         for idx, (obs_s, target_s, obs_pose, target_pose) in enumerate(train_loader):
-            batch_size = obs_s.shape[0]
             obs_s = obs_s.to(device=opt.device)
             target_s = target_s.to(device=opt.device)
             obs_pose = obs_pose.to(device=opt.device)
             target_pose = target_pose.to(device=opt.device)
+            batch_size = obs_s.shape[0]
 
             model.zero_grad()
             speed_preds = model(pose=obs_pose, vel=obs_s)
@@ -50,11 +50,11 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
         train_s_scores.append(avg_epoch_train_speed_loss.avg)
 
         for idx, (obs_s, target_s, obs_pose, target_pose) in enumerate(val_loader):
-            batch_size = obs_s.shape[0]
             obs_s = obs_s.to(device='cuda')
             target_s = target_s.to(device='cuda')
             obs_pose = obs_pose.to(device='cuda')
             target_pose = target_pose.to(device='cuda')
+            batch_size = obs_s.shape[0]
 
             with torch.no_grad():
                 speed_preds = model(pose=obs_pose, vel=obs_s)
