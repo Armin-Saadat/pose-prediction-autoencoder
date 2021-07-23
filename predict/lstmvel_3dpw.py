@@ -16,12 +16,15 @@ def parse_option():
     parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--hardtanh_limit', type=int, default=100)
     parser.add_argument('--load_ckpt', type=str)
-
+    parser.add_argument('--n_layers', type=int, default=1)
+    parser.add_argument('--dropout_encoder', type=float, default=0)
+    parser.add_argument('--dropout_pose_decoder', type=float, default=0)
+    parser.add_argument('--dropout_mask_decoder', type=float, default=0)
     opt = parser.parse_args()
     opt.stride = opt.input
     opt.skip = 1
     opt.dataset_name = '3dpw'
-    opt.loader_shuffle = True
+    opt.loader_shuffle = False
     opt.pin_memory = False
     opt.model_name = 'lstm_vel'
     return opt
