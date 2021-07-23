@@ -24,7 +24,7 @@ def parse_option():
     opt.stride = opt.input
     opt.skip = 1
     opt.dataset_name = '3dpw'
-    opt.loader_shuffle = False
+    opt.loader_shuffle = True
     opt.pin_memory = False
     opt.model_name = 'lstm_vel'
     return opt
@@ -32,11 +32,8 @@ def parse_option():
 
 def predict(loader, model):
     l1e = nn.L1Loss()
-    val_s_scores = []
-
     start = time.time()
-    avg_epoch_val_speed_loss = AverageMeter()
-
+    avg_epoch_speed_loss = AverageMeter()
     ade_val = AverageMeter()
     fde_val = AverageMeter()
     for idx, (obs_s, target_s, obs_pose, target_pose) in loader:
@@ -45,18 +42,15 @@ def predict(loader, model):
         obs_pose = obs_pose.to(device='cuda')
         target_pose = target_pose.to(device='cuda')
         with torch.no_grad():
-            (speed_preds,) = model(pose=obs_pose, vel=obs_s)
-
+            speed_preds = model(pose=obs_pose, vel=obs_s)
             speed_loss = l1e(speed_preds, target_s)
-
-            avg_epoch_val_speed_loss.update(val=float(speed_loss))
+            avg_epoch_speed_loss.update(val=float(speed_loss), n=target_s.shape[0])
 
             preds_p = speed2pos3d(speed_preds, obs_pose)
-            ade_val.update(val=float(ADE_3d(preds_p, target_pose)))
-            fde_val.update(val=float(FDE_3d(preds_p, target_pose)))
+            ade_val.update(val=float(ADE_3d(preds_p, target_pose)), n=target_pose.shape[0])
+            fde_val.update(val=float(FDE_3d(preds_p, target_pose)), n=target_pose.shape[0])
 
-    val_s_scores.append(avg_epoch_val_speed_loss.avg)
-    print('| speed_loss: %.2f' % avg_epoch_val_speed_loss.avg,
+    print('| speed_loss: %.2f' % avg_epoch_speed_loss.avg,
           '| ade_val: %.2f' % ade_val.avg, '| fde_val: %.2f' % fde_val.avg,
           '| epoch_time.avg:%.2f' % (time.time() - start))
     sys.stdout.flush()
