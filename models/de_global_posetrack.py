@@ -4,9 +4,9 @@ from models.decoder import PoseDecoder
 from models.encoder import Encoder
 
 
-class DE_Global_Posetrack(nn.Module):
+class DEGlobalPosetrack(nn.Module):
     def __init__(self, args):
-        super(DE_Global_Posetrack, self).__init__()
+        super(DEGlobalPosetrack, self).__init__()
         self.args = args
         self.pose_encoder = Encoder(args=self.args, input_size=2, dropout=0)
         self.vel_encoder = Encoder(args=self.args, input_size=2, dropout=0)
