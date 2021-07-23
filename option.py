@@ -23,6 +23,9 @@ class Option:
         self.stride = self.input
         self.skip = 1
         self.n_layers = 1
+        self.dropout_encoder = 0
+        self.dropout_pose_decoder = 0
+        self.dropout_mask_decoder = 0
 
 
 def parse_option(model_name, dataset_name):
