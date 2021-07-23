@@ -25,6 +25,7 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
         fde_val = AverageMeter()
 
         for idx, (obs_s, target_s, obs_pose, target_pose) in enumerate(train_loader):
+            batch_size = obs_s.shape[0]
             obs_s = obs_s.to(device=opt.device)
             target_s = target_s.to(device=opt.device)
             obs_pose = obs_pose.to(device=opt.device)
@@ -35,12 +36,12 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
             speed_loss = l1e(speed_preds, target_s)
 
             preds_p = speed2pos(speed_preds, obs_pose)
-            ade_train.update(val=float(ADE_c(preds_p, target_pose)))
-            fde_train.update(val=FDE_c(preds_p, target_pose))
+            ade_train.update(val=float(ADE_c(preds_p, target_pose)), n=batch_size)
+            fde_train.update(val=FDE_c(preds_p, target_pose), n=batch_size)
 
             speed_loss.backward()
             optimizer.step()
-            avg_epoch_train_speed_loss.update(val=float(speed_loss))
+            avg_epoch_train_speed_loss.update(val=float(speed_loss), n=batch_size)
 
         if epoch % opt.save_freq == 0:
             save_file = os.path.join(
@@ -49,6 +50,7 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
         train_s_scores.append(avg_epoch_train_speed_loss.avg)
 
         for idx, (obs_s, target_s, obs_pose, target_pose) in enumerate(val_loader):
+            batch_size = obs_s.shape[0]
             obs_s = obs_s.to(device='cuda')
             target_s = target_s.to(device='cuda')
             obs_pose = obs_pose.to(device='cuda')
@@ -58,11 +60,11 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
                 speed_preds = model(pose=obs_pose, vel=obs_s)
                 speed_loss = l1e(speed_preds, target_s)
 
-                avg_epoch_val_speed_loss.update(val=float(speed_loss))
+                avg_epoch_val_speed_loss.update(val=float(speed_loss), n=batch_size)
 
                 preds_p = speed2pos(speed_preds, obs_pose)
-                ade_val.update(val=float(ADE_c(preds_p, target_pose)))
-                fde_val.update(val=float(FDE_c(preds_p, target_pose)))
+                ade_val.update(val=float(ADE_c(preds_p, target_pose)), n=batch_size)
+                fde_val.update(val=float(FDE_c(preds_p, target_pose)), n=batch_size)
 
         val_s_scores.append(avg_epoch_val_speed_loss.avg)
         scheduler.step(avg_epoch_val_speed_loss.avg)
