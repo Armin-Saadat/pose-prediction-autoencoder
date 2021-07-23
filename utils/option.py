@@ -44,7 +44,7 @@ def parse_option(model_name, dataset_name):
     parser.add_argument('--output', type=int, default=14)
     # parser.add_argument('--model_name', type=str, default='lstm_vel', choices=['lstm_vel', 'de_global', 'de_local'])
     # parser.add_argument('--dataset_name', type=str, default='posetrack', choices=['posetrack', '3dpw'])
-    parser.add_argument('--save_folder', type=str, default='snapshots')
+    parser.add_argument('--save_folder', type=str, default='../snapshots')
     parser.add_argument('--save_freq', type=int, default=198)
     parser.add_argument('--load_ckpt', type=str)
     parser.add_argument('--name', type=str)
