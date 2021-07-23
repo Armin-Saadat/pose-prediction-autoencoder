@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from models.decoder import PoseDecoder
+from models.decoder import VelDecoder
 from models.encoder import Encoder
 
 
@@ -8,9 +8,9 @@ class DEGlobalPosetrack(nn.Module):
     def __init__(self, args):
         super(DEGlobalPosetrack, self).__init__()
         self.args = args
-        self.pose_encoder = Encoder(args=self.args, input_size=2, dropout=0)
-        self.vel_encoder = Encoder(args=self.args, input_size=2, dropout=0)
-        self.vel_decoder = PoseDecoder(args=self.args, dropout=0, out_features=2, input_size=2)
+        self.pose_encoder = Encoder(args=self.args, input_size=2)
+        self.vel_encoder = Encoder(args=self.args, input_size=2)
+        self.vel_decoder = VelDecoder(args=self.args, out_features=2, input_size=2)
 
     def forward(self, pose=None, vel=None):
         outputs = []

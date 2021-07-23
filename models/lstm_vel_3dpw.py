@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from models.decoder import PoseDecoder
+from models.decoder import VelDecoder
 from models.encoder import Encoder
 
 
@@ -8,10 +8,10 @@ class LSTMVel3dpw(nn.Module):
     def __init__(self, args):
         super(LSTMVel3dpw, self).__init__()
 
-        self.pose_encoder = Encoder(args=self.args, input_size=39, dropout=0)
-        self.vel_encoder = Encoder(args=self.args, input_size=39, dropout=0)
+        self.pose_encoder = Encoder(args=self.args, input_size=39)
+        self.vel_encoder = Encoder(args=self.args, input_size=39)
 
-        self.vel_decoder = PoseDecoder(args=self.args, dropout=0, out_features=39, input_size=39)
+        self.vel_decoder = VelDecoder(args=self.args, out_features=39, input_size=39)
         self.args = args
 
     def forward(self, pose=None, vel=None):

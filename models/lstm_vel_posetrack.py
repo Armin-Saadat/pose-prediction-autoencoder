@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from models.decoder import PoseDecoder, MaskDecoder
+from models.decoder import VelDecoder, MaskDecoder
 from models.encoder import Encoder
 
 
@@ -8,12 +8,12 @@ class LSTMVelPosetrack(nn.Module):
     def __init__(self, args):
         super().__init__()
         self.args = args
-        self.pose_encoder = Encoder(args=self.args, input_size=28, dropout=0)
-        self.vel_encoder = Encoder(args=self.args, input_size=28, dropout=0)
-        self.vel_decoder = PoseDecoder(args=self.args, dropout=0, out_features=28, input_size=28)
+        self.pose_encoder = Encoder(args=self.args, input_size=28)
+        self.vel_encoder = Encoder(args=self.args, input_size=28)
+        self.vel_decoder = VelDecoder(args=self.args, out_features=28, input_size=28)
 
-        self.mask_encoder = Encoder(args=self.args, input_size=14, dropout=0)
-        self.mask_decoder = MaskDecoder(args=self.args, dropout=0, out_features=14, input_size=14)
+        self.mask_encoder = Encoder(args=self.args, input_size=14)
+        self.mask_decoder = MaskDecoder(args=self.args, out_features=14, input_size=14)
 
     def forward(self, pose=None, vel=None, mask=None):
         outputs = []

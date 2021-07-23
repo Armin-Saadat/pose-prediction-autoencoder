@@ -2,7 +2,7 @@ from torch import nn
 import torch
 
 
-class PoseDecoder(nn.Module):
+class VelDecoder(nn.Module):
     def __init__(self, args, out_features, input_size=28):
         super().__init__()
         self.args = args
