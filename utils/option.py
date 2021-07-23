@@ -8,7 +8,7 @@ class Option:
         self.epochs = epochs
         self.learning_rate = learning_rate
         self.lr_decay_rate = lr_decay_rate
-        self.loader_shuffle = False
+        self.loader_shuffle = True
         self.pin_memory = False
         self.device = 'cuda'
         self.hidden_size = 1000
@@ -35,7 +35,7 @@ def parse_option(model_name, dataset_name):
     parser.add_argument('--epochs', type=int, default=200, help='number of training epochs')
     parser.add_argument('--learning_rate', type=float, default=0.01, help='learning rate')
     parser.add_argument('--lr_decay_rate', type=float, default=0.25, help='decay rate for learning rate')
-    parser.add_argument('--loader_shuffle', type=bool, default=False)
+    parser.add_argument('--loader_shuffle', type=bool, default=True)
     parser.add_argument('--pin_memory', type=bool, default=False)
     parser.add_argument('--device', type=str, default='cuda')
     parser.add_argument('--hidden_size', type=int, default=1000)
