@@ -89,8 +89,11 @@ if __name__ == '__main__':
     global_model = set_model(opt)
     opt.model_name = 'de_local'
     local_model = set_model(opt)
-    if opt.load_local_ckpt is not None:
+    if opt.load_global_ckpt is not None:
         global_model = load_model(opt, global_model, opt.load_global_ckpt)
+    else:
+        raise EnvironmentError
+    if opt.load_local_ckpt is not None:
         local_model = load_model(opt, local_model, opt.load_local_ckpt)
     else:
         raise EnvironmentError
