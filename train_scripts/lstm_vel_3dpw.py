@@ -2,10 +2,10 @@ import time
 import torch
 import torch.nn as nn
 
-from metrices import ADE_3d, FDE_3d
-from utils import AverageMeter, speed2pos3d
-from utils import set_dataloader, set_model, set_optimizer, set_scheduler, load_model, save_model
-from option import parse_option
+from utils.metrices import ADE_3d, FDE_3d
+from utils.others import AverageMeter, speed2pos3d
+from utils.others import set_dataloader, set_model, set_optimizer, set_scheduler, load_model
+from utils.option import parse_option
 
 
 def train(train_loader, val_loader, model, optimizer, scheduler, opt):

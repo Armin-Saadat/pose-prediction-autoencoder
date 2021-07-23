@@ -1,8 +1,8 @@
 import argparse
 import torch
 import torch.nn as nn
-from utils import set_dataloader, set_model, load_model, AverageMeter, speed2pos, speed2pos_local
-from metrices import ADE_c, FDE_c
+from utils.others import set_dataloader, set_model, load_model, AverageMeter, speed2pos, speed2pos_local
+from utils.metrices import ADE_c, FDE_c
 import time
 import sys
 

@@ -2,8 +2,8 @@ import argparse
 import torch
 import torch.nn as nn
 import time
-from utils import set_dataloader, set_model, load_model, AverageMeter, speed2pos3d
-from metrices import ADE_3d, FDE_3d
+from utils.others import set_dataloader, set_model, load_model, AverageMeter, speed2pos3d
+from utils.metrices import ADE_3d, FDE_3d
 import sys
 
 

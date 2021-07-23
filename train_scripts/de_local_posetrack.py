@@ -4,10 +4,10 @@ import time
 import torch
 import torch.nn as nn
 
-from metrices import ADE_c, FDE_c
-from utils import speed2pos_local, AverageMeter
-from utils import set_dataloader, set_model, set_optimizer, set_scheduler, save_model, load_model
-from option import parse_option
+from utils.metrices import ADE_c, FDE_c
+from utils.others import speed2pos_local, AverageMeter
+from utils.others import set_dataloader, set_model, set_optimizer, set_scheduler, save_model, load_model
+from utils.option import parse_option
 
 
 def train(train_loader, val_loader, model, optimizer, scheduler, opt):
