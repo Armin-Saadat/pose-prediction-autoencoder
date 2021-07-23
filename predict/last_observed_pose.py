@@ -19,6 +19,7 @@ def parse_option():
     opt.dataset_name = 'posetrack'
     opt.loader_shuffle = True
     opt.pin_memory = False
+    opt.model_name = 'lstm_vel'
     return opt
 
 
@@ -41,8 +42,8 @@ def predict(loader):
         target_mask = target_mask.to(device='cuda')
         with torch.no_grad():
             batch_size = obs_pose.shape[0]
-            speed_preds = torch.zeros(batch_size, 14, 28)
-            m = obs_mask[:, -1, :]
+            speed_preds = torch.zeros(batch_size, 14, 28).to(device='cuda')
+            m = obs_mask[:, -1:, :]
             mask_preds = torch.cat((m, m, m, m, m, m, m, m, m, m, m, m, m, m), 1)
 
             speed_loss = l1e(speed_preds, target_s)

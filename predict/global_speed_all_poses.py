@@ -45,7 +45,7 @@ def predict(loader, global_model):
         with torch.no_grad():
             vel = global_vel_preds = global_model(pose=global_pose_obs, vel=global_vel_obs)
             local_vel_preds = torch.cat((vel, vel, vel, vel, vel, vel, vel, vel, vel, vel, vel, vel, vel), 2)
-            m = obs_mask[:, -1, :]
+            m = obs_mask[:, -1:, :]
             mask_preds = torch.cat((m, m, m, m, m, m, m, m, m, m, m, m, m, m), 1)
             global_speed_loss = l1e(global_vel_preds, global_vel_targets)
             mask_loss = bce(mask_preds, mask_target)
