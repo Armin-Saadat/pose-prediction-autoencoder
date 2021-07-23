@@ -55,7 +55,7 @@ def predict(loader, global_model, local_model):
             global_speed_loss = l1e(global_vel_preds, global_vel_targets)
             mask_loss = bce(mask_preds, mask_target)
             avg_epoch_val_mask_loss.update(val=float(mask_loss))
-            avg_epoch_val_speed_loss.update(val=float(global_speed_loss + local_speed_loss))
+            avg_epoch_val_speed_loss.update(val=float((global_speed_loss + 13 * local_speed_loss) / 14))
 
             global_pose_pred = speed2pos(global_vel_preds, global_pose_obs)
             local_pose_pred = speed2pos_local(local_vel_preds, local_pose_obs)
