@@ -18,7 +18,7 @@ def parse_option():
     opt.stride = opt.input
     opt.skip = 1
     opt.dataset_name = 'posetrack'
-    opt.loader_shuffle = True
+    opt.loader_shuffle = False
     opt.pin_memory = False
     return opt
 

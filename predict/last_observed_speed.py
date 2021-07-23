@@ -17,7 +17,7 @@ def parse_option():
     opt.stride = opt.input
     opt.skip = 1
     opt.dataset_name = 'posetrack'
-    opt.loader_shuffle = True
+    opt.loader_shuffle = False
     opt.pin_memory = False
     opt.model_name = 'lstm_vel'
     return opt
@@ -30,7 +30,7 @@ def predict(loader):
 
     start = time.time()
     avg_epoch_val_speed_loss = AverageMeter()
-    avg_epoch_val_pose_loss = AverageMeter()
+    avg_epoch_mask_loss = AverageMeter()
 
     ade_val = AverageMeter()
     fde_val = AverageMeter()
@@ -50,7 +50,7 @@ def predict(loader):
             mask_loss = bce(mask_preds, target_mask)
 
             avg_epoch_val_speed_loss.update(val=float(speed_loss))
-            avg_epoch_val_pose_loss.update(val=float(mask_loss))
+            avg_epoch_mask_loss.update(val=float(mask_loss))
 
             preds_p = speed2pos(speed_preds, obs_pose)
             ade_val.update(val=float(ADE_c(preds_p, target_pose)))
@@ -58,7 +58,7 @@ def predict(loader):
 
     val_s_scores.append(avg_epoch_val_speed_loss.avg)
     print('| speed_loss: %.2f' % avg_epoch_val_speed_loss.avg,
-          '| mask_loss: %.2f' % avg_epoch_val_pose_loss.avg,
+          '| mask_loss: %.2f' % avg_epoch_mask_loss.avg,
           '| ade_val: %.2f' % ade_val.avg, '| fde_val: %.2f' % fde_val.avg,
           '| epoch_time.avg:%.2f' % (time.time() - start))
     sys.stdout.flush()
