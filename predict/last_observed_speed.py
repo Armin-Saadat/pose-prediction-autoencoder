@@ -17,7 +17,7 @@ def parse_option():
     opt.stride = opt.input
     opt.skip = 1
     opt.dataset_name = 'posetrack'
-    opt.loader_shuffle = False
+    opt.loader_shuffle = True
     opt.pin_memory = False
     opt.model_name = 'lstm_vel'
     return opt
@@ -26,12 +26,9 @@ def parse_option():
 def predict(loader):
     l1e = nn.L1Loss()
     bce = nn.BCELoss()
-    val_s_scores = []
-
     start = time.time()
-    avg_epoch_val_speed_loss = AverageMeter()
+    avg_epoch_speed_loss = AverageMeter()
     avg_epoch_mask_loss = AverageMeter()
-
     ade_val = AverageMeter()
     fde_val = AverageMeter()
     for idx, (obs_s, target_s, obs_pose, target_pose, obs_mask, target_mask) in enumerate(loader):
@@ -49,15 +46,14 @@ def predict(loader):
             speed_loss = l1e(speed_preds, target_s)
             mask_loss = bce(mask_preds, target_mask)
 
-            avg_epoch_val_speed_loss.update(val=float(speed_loss))
-            avg_epoch_mask_loss.update(val=float(mask_loss))
+            avg_epoch_speed_loss.update(val=float(speed_loss), n=target_s.shape[0])
+            avg_epoch_mask_loss.update(val=float(mask_loss), n=target_mask.shape[0])
 
             preds_p = speed2pos(speed_preds, obs_pose)
-            ade_val.update(val=float(ADE_c(preds_p, target_pose)))
-            fde_val.update(val=float(FDE_c(preds_p, target_pose)))
+            ade_val.update(val=float(ADE_c(preds_p, target_pose)), n=target_pose.shape[0])
+            fde_val.update(val=float(FDE_c(preds_p, target_pose)), n=target_pose.shape[0])
 
-    val_s_scores.append(avg_epoch_val_speed_loss.avg)
-    print('| speed_loss: %.2f' % avg_epoch_val_speed_loss.avg,
+    print('| speed_loss: %.2f' % avg_epoch_speed_loss.avg,
           '| mask_loss: %.2f' % avg_epoch_mask_loss.avg,
           '| ade_val: %.2f' % ade_val.avg, '| fde_val: %.2f' % fde_val.avg,
           '| epoch_time.avg:%.2f' % (time.time() - start))

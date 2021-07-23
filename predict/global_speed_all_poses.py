@@ -18,7 +18,7 @@ def parse_option():
     opt.stride = opt.input
     opt.skip = 1
     opt.dataset_name = 'posetrack'
-    opt.loader_shuffle = False
+    opt.loader_shuffle = True
     opt.pin_memory = False
     return opt
 
@@ -26,12 +26,9 @@ def parse_option():
 def predict(loader, global_model):
     l1e = nn.L1Loss()
     bce = nn.BCELoss()
-    val_s_scores = []
-
     start = time.time()
     avg_epoch_global_speed_loss = AverageMeter()
     avg_epoch_mask_loss = AverageMeter()
-
     ade_val = AverageMeter()
     fde_val = AverageMeter()
     for idx, (obs_velocities, target_velocities, obs_pose, target_pose, obs_mask, target_mask) in enumerate(loader):
@@ -49,17 +46,16 @@ def predict(loader, global_model):
             mask_preds = torch.cat((m, m, m, m, m, m, m, m, m, m, m, m, m, m), 1)
             global_speed_loss = l1e(global_vel_preds, global_vel_targets)
             mask_loss = bce(mask_preds, mask_target)
-            avg_epoch_global_speed_loss.update(val=float(global_speed_loss))
-            avg_epoch_mask_loss.update(val=float(mask_loss))
+            avg_epoch_global_speed_loss.update(val=float(global_speed_loss), n=global_vel_targets.shape[0])
+            avg_epoch_mask_loss.update(val=float(mask_loss), n=mask_target.shape[0])
 
             global_pose_pred = speed2pos(global_vel_preds, global_pose_obs)
             local_pose_pred = speed2pos(local_vel_preds, local_pose_obs)
-            # now we have to make a prediction
-            pose_pred = torch.cat((global_pose_pred, local_pose_pred), 2)
-            ade_val.update(val=float(ADE_c(pose_pred, target_pose)))
-            fde_val.update(val=FDE_c(pose_pred, target_pose))
 
-    val_s_scores.append(avg_epoch_global_speed_loss.avg)
+            pose_pred = torch.cat((global_pose_pred, local_pose_pred), 2)
+            ade_val.update(val=float(ADE_c(pose_pred, target_pose)), n=target_pose.shape[0])
+            fde_val.update(val=FDE_c(pose_pred, target_pose), n=target_pose.shape[0])
+
     print('| speed_loss: %.2f' % avg_epoch_global_speed_loss.avg,
           '| mask_loss: %.2f' % avg_epoch_mask_loss.avg,
           '| ade_val: %.2f' % ade_val.avg, '| fde_val: %.2f' % fde_val.avg,
