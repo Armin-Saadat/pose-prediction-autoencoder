@@ -45,7 +45,7 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
 
         if epoch % opt.save_freq == 0:
             save_file = os.path.join(
-                opt.save_folder, 'ckpt_{name}_epoch_{epoch}.pth'.format(name=opt.name, epoch=epoch))
+                opt.save_folder, '{name}_epoch{epoch}.pth'.format(name=opt.name, epoch=epoch))
             save_model(model, optimizer, opt, epoch, save_file)
         train_s_scores.append(avg_epoch_train_speed_loss.avg)
 
