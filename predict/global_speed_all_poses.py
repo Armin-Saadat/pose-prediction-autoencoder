@@ -43,18 +43,18 @@ def predict(loader, global_model):
         local_pose_obs = obs_pose[:, :, 2:].to(device='cuda')
         target_pose = target_pose.to(device='cuda')
         obs_mask = obs_mask.to(device='cuda')
-        mask_target = target_mask.to(device='cuda')
+        target_mask = target_mask.to(device='cuda')
         with torch.no_grad():
             global_vel_preds = global_model(pose=global_pose_obs, vel=global_vel_obs)
-            local_vel_preds = torch.zeros(mask_target.shape[0], 14, 26)
+            local_vel_preds = torch.zeros(target_mask.shape[0], 14, 26)
             m = obs_mask[:, -1:, :]
             mask_preds = torch.cat((m, m, m, m, m, m, m, m, m, m, m, m, m, m), 1)
 
-            mask_loss = bce(mask_preds, mask_target)
-            avg_epoch_mask_loss.update(val=float(mask_loss), n=mask_target.shape[0])
+            mask_loss = bce(mask_preds, target_mask)
+            avg_epoch_mask_loss.update(val=float(mask_loss), n=target_mask.shape[0])
 
-            mask_acc = mask_accuracy(mask_preds, mask_target)
-            avg_epoch_mask_acc.update(val=float(mask_acc), n=mask_target.shape[0])
+            mask_acc = mask_accuracy(mask_preds, target_mask)
+            avg_epoch_mask_acc.update(val=float(mask_acc), n=target_mask.shape[0])
 
             global_pose_pred = speed2pos(global_vel_preds, global_pose_obs)
             local_pose_pred = speed2pos(local_vel_preds, local_pose_obs)

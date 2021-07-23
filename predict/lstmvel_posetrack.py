@@ -2,7 +2,7 @@ import argparse
 import torch
 import torch.nn as nn
 from utils.others import set_dataloader, set_model, load_model, AverageMeter, speed2pos
-from utils.metrices import ADE_c, FDE_c
+from utils.metrices import ADE_c, FDE_c, mask_accuracy
 import time
 import sys
 
@@ -37,6 +37,7 @@ def predict(loader, model):
     start = time.time()
     avg_epoch_speed_loss = AverageMeter()
     avg_epoch_mask_loss = AverageMeter()
+    avg_epoch_mask_acc = AverageMeter()
     ade_val = AverageMeter()
     fde_val = AverageMeter()
     for idx, (obs_s, target_s, obs_pose, target_pose, obs_mask, target_mask) in enumerate(loader):
@@ -51,9 +52,11 @@ def predict(loader, model):
 
             speed_loss = l1e(speed_preds, target_s)
             mask_loss = bce(mask_preds, target_mask)
+            mask_acc = mask_accuracy(mask_preds, target_mask)
 
             avg_epoch_speed_loss.update(val=float(speed_loss), n=target_s.shape[0])
             avg_epoch_mask_loss.update(val=float(mask_loss), n=target_mask.shape[0])
+            avg_epoch_mask_acc.update(val=float(mask_acc), n=target_mask.shape[0])
 
             preds_p = speed2pos(speed_preds, obs_pose)
             ade_val.update(val=float(ADE_c(preds_p, target_pose)), n=target_pose.shape[0])
@@ -61,6 +64,7 @@ def predict(loader, model):
 
     print('| speed_loss: %.2f' % avg_epoch_speed_loss.avg,
           '| mask_loss: %.2f' % avg_epoch_mask_loss.avg,
+          '| mask_acc: %.2f' % avg_epoch_mask_acc.avg,
           '| ade_val: %.2f' % ade_val.avg, '| fde_val: %.2f' % fde_val.avg,
           '| epoch_time.avg:%.2f' % (time.time() - start))
     sys.stdout.flush()
