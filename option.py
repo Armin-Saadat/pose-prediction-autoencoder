@@ -46,6 +46,9 @@ def parse_option(model_name, dataset_name):
     parser.add_argument('--load_ckpt', type=str)
     parser.add_argument('--name', type=str)
     parser.add_argument('--n_layers', type=int, default=1)
+    parser.add_argument('--dropout_encoder', type=int, default=0)
+    parser.add_argument('--dropout_pose_decoder', type=int, default=0)
+    parser.add_argument('--dropout_mask_decoder', type=int, default=0)
     opt = parser.parse_args()
     opt.stride = opt.input
     opt.skip = 1

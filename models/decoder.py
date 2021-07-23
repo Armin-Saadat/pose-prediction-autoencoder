@@ -3,19 +3,18 @@ import torch
 
 
 class PoseDecoder(nn.Module):
-    def __init__(self, args, out_features, dropout=0, input_size=28):
+    def __init__(self, args, out_features, input_size=28):
         super().__init__()
         self.args = args
+        self.dropout = nn.Dropout(self.args.dropout_pose_decoder)
         self.rnns = [
             nn.LSTMCell(input_size=input_size if i == 0 else args.hidden_size, hidden_size=args.hidden_size).cuda() for
             i in range(args.n_layers)]
         self.fc_out = nn.Linear(in_features=args.hidden_size, out_features=out_features)
         self.hardtanh = nn.Hardtanh(min_val=-1 * args.hardtanh_limit, max_val=args.hardtanh_limit, inplace=False)
-        self.dropout = nn.Dropout(dropout)
 
     def forward(self, inputs, hiddens, cells):
         dec_inputs = self.dropout(inputs)
-
         if len(hiddens.shape) < 3 or len(cells.shape) < 3:
             hiddens = torch.unsqueeze(hiddens, 0)
             cells = torch.unsqueeze(cells, 0)
@@ -28,26 +27,23 @@ class PoseDecoder(nn.Module):
                     hiddens[i], cells[i] = rnn(hiddens.clone()[i - 1], (hiddens.clone()[i], cells.clone()[i]))
             output = self.hardtanh(self.fc_out(hiddens.clone()[-1]))
             dec_inputs = output.detach()
-
             outputs = torch.cat((outputs, output.unsqueeze(1)), dim=1)
         return outputs
 
 
 class MaskDecoder(nn.Module):
-    def __init__(self, args, out_features, dropout=0, input_size=14):
+    def __init__(self, args, out_features, input_size=14):
         super().__init__()
         self.args = args
+        self.dropout = nn.Dropout(self.args.dropout_mask_decoder)
         self.rnns = [
             nn.LSTMCell(input_size=input_size if i == 0 else args.hidden_size, hidden_size=args.hidden_size).cuda() for
             i in range(args.n_layers)]
-
         self.fc_out = nn.Linear(in_features=args.hidden_size, out_features=out_features)
         self.sigmoid = nn.Sigmoid()
-        self.dropout = nn.Dropout(dropout)
 
-    def forward(self, input, hiddens, cells):
-        dec_input = self.dropout(input)
-
+    def forward(self, inputs, hiddens, cells):
+        dec_input = self.dropout(inputs)
         if len(hiddens.shape) < 3 or len(cells.shape) < 3:
             hiddens = torch.unsqueeze(hiddens, 0)
             cells = torch.unsqueeze(cells, 0)
