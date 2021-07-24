@@ -46,7 +46,7 @@ def predict(loader, global_model):
         target_mask = target_mask.to(device='cuda')
         with torch.no_grad():
             global_vel_preds = global_model(pose=global_pose_obs, vel=global_vel_obs)
-            local_vel_preds = torch.zeros(target_mask.shape[0], 14, 26)
+            local_vel_preds = torch.zeros(target_mask.shape[0], 14, 26).to(device='cuda')
             m = obs_mask[:, -1:, :]
             mask_preds = torch.cat((m, m, m, m, m, m, m, m, m, m, m, m, m, m), 1)
 
