@@ -55,7 +55,7 @@ def draw_keypoints_op(outputs):
     keypoints = outputs
     keypoints = keypoints.reshape(-1, 2)
     for p in range(keypoints.shape[0]):
-        if not (keypoints[p, 0] <= 0 and keypoints[p, 1] <= 0):
+        if not (keypoints[p, 0] <= 0 or keypoints[p, 1] <= 0):
             cv2.circle(image, (int(keypoints[p, 0]), int(keypoints[p, 1])), 3, (0, 0, 255), thickness=-1,
                        lineType=cv2.FILLED)
     for ie, e in enumerate(edges):

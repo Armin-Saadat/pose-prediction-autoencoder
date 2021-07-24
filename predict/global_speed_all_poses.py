@@ -30,6 +30,7 @@ def parse_option():
 
 
 def predict(loader, global_model):
+    global_model.eval()
     bce = nn.BCELoss()
     start = time.time()
     avg_epoch_speed_loss = AverageMeter()

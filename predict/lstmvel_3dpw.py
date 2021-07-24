@@ -31,6 +31,7 @@ def parse_option():
 
 
 def predict(loader, model):
+    model.eval()
     l1e = nn.L1Loss()
     start = time.time()
     avg_epoch_speed_loss = AverageMeter()

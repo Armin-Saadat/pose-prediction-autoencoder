@@ -32,6 +32,8 @@ def parse_option():
 
 
 def predict(loader, global_model, local_model):
+    global_model.eval()
+    local_model.eval()
     l1e = nn.L1Loss()
     bce = nn.BCELoss()
     start = time.time()
