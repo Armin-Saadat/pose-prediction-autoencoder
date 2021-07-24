@@ -67,7 +67,7 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
                 fde_val.update(val=float(FDE_c(preds_p, target_pose)), n=batch_size)
 
         val_s_scores.append(avg_epoch_val_speed_loss.avg)
-        scheduler.step(avg_epoch_val_speed_loss.avg)
+        scheduler.step(avg_epoch_train_speed_loss.avg)
 
         print('e:', epoch, '| train_speed_loss: %.2f' % avg_epoch_train_speed_loss.avg,
               '| validation_speed_loss: %.2f' % avg_epoch_val_speed_loss.avg,
