@@ -7,9 +7,10 @@ class VelDecoder(nn.Module):
         super().__init__()
         self.args = args
         self.dropout = nn.Dropout(self.args.dropout_pose_decoder)
-        self.rnns = [
+        rnns = [
             nn.LSTMCell(input_size=input_size if i == 0 else args.hidden_size, hidden_size=args.hidden_size).cuda() for
             i in range(args.n_layers)]
+        self.rnns = nn.Sequential(rnns)
         self.fc_out = nn.Linear(in_features=args.hidden_size, out_features=out_features)
         self.hardtanh = nn.Hardtanh(min_val=-1 * args.hardtanh_limit, max_val=args.hardtanh_limit, inplace=False)
 
@@ -36,9 +37,10 @@ class MaskDecoder(nn.Module):
         super().__init__()
         self.args = args
         self.dropout = nn.Dropout(self.args.dropout_mask_decoder)
-        self.rnns = [
+        rnns = [
             nn.LSTMCell(input_size=input_size if i == 0 else args.hidden_size, hidden_size=args.hidden_size).cuda() for
             i in range(args.n_layers)]
+        self.rnns = nn.Sequential(rnns)
         self.fc_out = nn.Linear(in_features=args.hidden_size, out_features=out_features)
         self.sigmoid = nn.Sigmoid()
 
