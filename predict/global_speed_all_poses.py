@@ -1,7 +1,7 @@
 import argparse
 import torch
 import torch.nn as nn
-from utils.others import set_dataloader, set_model, load_model, AverageMeter, speed2pos
+from utils.others import set_dataloader, set_model, load_model, AverageMeter, speed2pos, speed2pos_local
 from utils.metrices import ADE_c, FDE_c, mask_accuracy
 import time
 import sys
@@ -58,7 +58,7 @@ def predict(loader, global_model):
             avg_epoch_mask_acc.update(val=float(mask_acc), n=target_mask.shape[0])
 
             global_pose_pred = speed2pos(global_vel_preds, global_pose_obs)
-            local_pose_pred = speed2pos(local_vel_preds, local_pose_obs)
+            local_pose_pred = speed2pos_local(local_vel_preds, local_pose_obs)
 
             pose_pred = regenerate_entire_pose(global_pose_pred, local_pose_pred)
             ade_val.update(val=float(ADE_c(pose_pred, target_pose)), n=target_pose.shape[0])
