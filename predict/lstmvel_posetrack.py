@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 
 from utils.metrices import ADE_c, FDE_c, mask_accuracy
-from utils.others import set_dataloader, set_model, load_model, AverageMeter, speed2pos
+from utils.others import set_dataloader, load_model, AverageMeter, speed2pos
 
 
 def parse_option():
@@ -55,7 +55,9 @@ def predict(loader, model, opt):
         obs_mask = obs_mask.to(opt.device)
         target_mask = target_mask.to(opt.device)
         with torch.no_grad():
-            speed_preds, mask_preds = model(pose=obs_pose, vel=obs_s, mask=obs_mask)
+            speed_preds, _ = model(pose=obs_pose, vel=obs_s, mask=obs_mask)
+            m = obs_mask[:, -1:, :]
+            mask_preds = torch.cat((m, m, m, m, m, m, m, m, m, m, m, m, m, m), 1)
 
             speed_loss = l1e(speed_preds, target_s)
             mask_loss = bce(mask_preds, target_mask)
@@ -112,8 +114,9 @@ if __name__ == '__main__':
     opt = parse_option()
     load_ckpt = opt.load_ckpt
     _, val_loader = set_dataloader(opt)
-    model = set_model(opt)
     if opt.load_ckpt is not None:
         model = load_model(opt)
+    else:
+        raise EnvironmentError
     opt.load_ckpt = load_ckpt
     predict(val_loader, model, opt)
