@@ -23,6 +23,8 @@ def parse_option():
     parser.add_argument('--dropout_encoder', type=float, default=0)
     parser.add_argument('--dropout_pose_decoder', type=float, default=0)
     parser.add_argument('--dropout_mask_decoder', type=float, default=0)
+    parser.add_argument('--test_output', type=bool, default=False)
+
     opt = parser.parse_args()
     opt.stride = opt.input
     opt.skip = 1
@@ -40,7 +42,7 @@ def predict(loader, model, opt):
     avg_epoch_speed_loss = AverageMeter()
     ade_val = AverageMeter()
     fde_val = AverageMeter()
-    for idx, (obs_s, target_s, obs_pose, target_pose) in loader:
+    for idx, (obs_s, target_s, obs_pose, target_pose) in enumerate(loader):
         obs_s = obs_s.to(opt.device)
         target_s = target_s.to(opt.device)
         obs_pose = obs_pose.to(opt.device)
@@ -84,7 +86,6 @@ if __name__ == '__main__':
     opt = parse_option()
     load_ckpt = opt.load_ckpt
     _, val_loader = set_dataloader(opt)
-    model = set_model(opt)
     if opt.load_ckpt is not None:
         model = load_model(opt)
     opt.load_ckpt = load_ckpt
