@@ -46,7 +46,7 @@ def predict(loader, model, opt):
         obs_pose = obs_pose.to(opt.device)
         target_pose = target_pose.to(opt.device)
         with torch.no_grad():
-            speed_preds = model(pose=obs_pose, vel=obs_s)
+            (speed_preds, ) = model(pose=obs_pose, vel=obs_s)
             speed_loss = l1e(speed_preds, target_s)
             avg_epoch_speed_loss.update(val=float(speed_loss), n=target_s.shape[0])
 
@@ -69,7 +69,7 @@ def predict(loader, model, opt):
             for j in range(len(data[i])):
                 pose = torch.tensor(data[i][j]).unsqueeze(0).to(opt.device)
                 vel = pose[:, 1:] - pose[:, :-1]
-                speed_preds = model(pose=pose, vel=vel)
+                (speed_preds, ) = model(pose=pose, vel=vel)
 
                 preds_p = speed2pos3d(speed_preds, pose)
                 pred = preds_p.squeeze(0)

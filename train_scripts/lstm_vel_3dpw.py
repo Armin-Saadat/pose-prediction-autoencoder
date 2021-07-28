@@ -1,10 +1,11 @@
+import os
 import time
 import torch
 import torch.nn as nn
 
 from utils.metrices import ADE_3d, FDE_3d
 from utils.others import AverageMeter, speed2pos3d
-from utils.others import set_dataloader, set_model, set_optimizer, set_scheduler, load_model
+from utils.others import set_dataloader, set_model, set_optimizer, set_scheduler, load_model, save_model
 from utils.option import parse_option
 
 
@@ -21,10 +22,8 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
         ade_val = AverageMeter()
         fde_train = AverageMeter()
         fde_val = AverageMeter()
-        counter = 0
 
         for idx, (obs_s, target_s, obs_pose, target_pose) in enumerate(train_loader):
-            counter += 1
             obs_s = obs_s.to(device='cuda')
             target_s = target_s.to(device='cuda')
             obs_pose = obs_pose.to(device='cuda')
@@ -32,7 +31,7 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
             batch_size = obs_s.shape[0]
             model.zero_grad()
 
-            speed_preds = model(pose=obs_pose, vel=obs_s)
+            (speed_preds, ) = model(pose=obs_pose, vel=obs_s)
             speed_loss = l1e(speed_preds, target_s)
 
             preds_p = speed2pos3d(speed_preds, obs_pose)
@@ -44,10 +43,12 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
             avg_epoch_train_speed_loss.update(float(speed_loss), n=batch_size)
 
         train_s_scores.append(avg_epoch_train_speed_loss.avg)
-        counter = 0
+        if (epoch + 1) % opt.save_freq == 0:
+            save_file = os.path.join(
+                opt.save_folder, '{name}_epoch{epoch}.pth'.format(name=opt.name, epoch=epoch))
+            save_model(model, optimizer, opt, epoch, save_file)
 
         for idx, (obs_s, target_s, obs_pose, target_pose) in enumerate(val_loader):
-            counter += 1
             obs_s = obs_s.to(device='cuda')
             target_s = target_s.to(device='cuda')
             obs_pose = obs_pose.to(device='cuda')
@@ -55,7 +56,7 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
             batch_size = obs_s.shape[0]
 
             with torch.no_grad():
-                (speed_preds,) = model(pose=obs_pose, vel=obs_s)
+                (speed_preds, ) = model(pose=obs_pose, vel=obs_s)
 
                 speed_loss = l1e(speed_preds, target_s)
                 avg_epoch_val_speed_loss.update(float(speed_loss), n=batch_size)

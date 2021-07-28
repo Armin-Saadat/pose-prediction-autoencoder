@@ -39,7 +39,7 @@ def parse_option(model_name, dataset_name):
     parser.add_argument('--pin_memory', type=bool, default=False)
     parser.add_argument('--device', type=str, default='cuda')
     parser.add_argument('--hidden_size', type=int, default=1000)
-    parser.add_argument('--hardtanh_limit', type=int, default=100)
+    parser.add_argument('--hardtanh_limit', type=float, default=100)
     parser.add_argument('--input', type=int, default=16)
     parser.add_argument('--output', type=int, default=14)
     # parser.add_argument('--model_name', type=str, default='lstm_vel', choices=['lstm_vel', 'de_global', 'de_local'])

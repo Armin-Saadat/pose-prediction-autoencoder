@@ -7,12 +7,12 @@ from models.encoder import Encoder
 class LSTMVel3dpw(nn.Module):
     def __init__(self, args):
         super(LSTMVel3dpw, self).__init__()
+        self.args = args
 
         self.pose_encoder = Encoder(args=self.args, input_size=39)
         self.vel_encoder = Encoder(args=self.args, input_size=39)
 
         self.vel_decoder = VelDecoder(args=self.args, out_features=39, input_size=39)
-        self.args = args
 
     def forward(self, pose=None, vel=None):
         outputs = []
