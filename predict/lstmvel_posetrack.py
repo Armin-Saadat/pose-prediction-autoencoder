@@ -102,10 +102,10 @@ def predict(loader, model, opt):
                 lm.append(mask_pred.detach().cpu().numpy().round().tolist())
             out_data.append(lp)
             out_mask.append(lm)
-        with open('./Posetrack/posetrack_predictions_{}.json'.format(
+        with open('../outputs/Posetrack/posetrack_predictions_{}.json'.format(
                 opt.load_ckpt.split('snapshots/')[1].split('.pth')[0]), 'w') as f:
             json.dump(out_data, f)
-        with open('./Posetrack/posetrack_masks_{}.json'.format(opt.load_ckpt.split('snapshots/')[1].split('.pth')[0]),
+        with open('../outputs/posetrack_masks_{}.json'.format(opt.load_ckpt.split('snapshots/')[1].split('.pth')[0]),
                   'w') as f:
             json.dump(out_mask, f)
 

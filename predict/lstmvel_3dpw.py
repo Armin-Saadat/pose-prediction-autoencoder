@@ -77,7 +77,7 @@ def predict(loader, model, opt):
                 pred = preds_p.squeeze(0)
                 lp.append(pred.tolist())
             out_data.append(lp)
-        with open('./3dpw/3dpw_predictions_{}.json'.format(
+        with open('../outputs/3dpw_predictions_{}.json'.format(
                 opt.load_ckpt.split('snapshots/')[1].split('.pth')[0]), 'w') as f:
             json.dump(out_data, f)
 
