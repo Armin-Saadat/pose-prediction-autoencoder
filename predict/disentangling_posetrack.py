@@ -54,7 +54,9 @@ def predict(loader, global_model, local_model):
         target_mask = target_mask.to(device='cuda')
         with torch.no_grad():
             global_vel_preds = global_model(pose=global_pose_obs, vel=global_vel_obs)
-            (local_vel_preds, mask_preds) = local_model(pose=local_pose_obs, vel=local_vel_obs, mask=obs_mask)
+            local_vel_preds, _ = local_model(pose=local_pose_obs, vel=local_vel_obs, mask=obs_mask)
+            m = obs_mask[:, -1:, :]
+            mask_preds = torch.cat((m, m, m, m, m, m, m, m, m, m, m, m, m, m), 1)
             local_speed_loss = l1e(local_vel_preds, local_vel_targets)
             global_speed_loss = l1e(global_vel_preds, global_vel_targets)
             avg_epoch_speed_loss.update(val=float((global_speed_loss + 13 * local_speed_loss) / 14),
