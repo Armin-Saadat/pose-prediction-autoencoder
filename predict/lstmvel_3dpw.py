@@ -62,6 +62,6 @@ if __name__ == '__main__':
     _, val_loader = set_dataloader(opt)
     model = set_model(opt)
     if opt.load_ckpt is not None:
-        model = load_model(opt, model)
+        model = load_model(opt)
 
     predict(val_loader, model)

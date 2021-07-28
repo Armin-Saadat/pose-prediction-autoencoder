@@ -87,7 +87,7 @@ if __name__ == '__main__':
     opt.model_name = 'de_global'
     global_model = set_model(opt)
     if opt.load_global_ckpt is not None:
-        global_model = load_model(opt, global_model, opt.load_global_ckpt)
+        global_model = load_model(opt, opt.load_global_ckpt)
     else:
         raise EnvironmentError
     predict(val_loader, global_model)

@@ -102,7 +102,7 @@ if __name__ == '__main__':
     train_loader, val_loader = set_dataloader(opt)
     model = set_model(opt)
     if opt.load_ckpt is not None:
-        model = load_model(opt, model)
+        model = load_model(opt)
     optimizer = set_optimizer(opt, model)
     scheduler = set_scheduler(opt, optimizer)
     train(train_loader, val_loader, model, optimizer, scheduler, opt)

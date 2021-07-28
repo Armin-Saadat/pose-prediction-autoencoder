@@ -32,12 +32,6 @@ class AverageMeter(object):
         self.count += n
         self.avg = self.sum / self.count
 
-
-def get_model(opt):
-    model = set_model(opt)
-    return load_model(opt, model)
-
-
 def set_model(opt):
     if opt.model_name == 'lstm_vel':
         if opt.dataset_name == 'posetrack':
@@ -56,7 +50,7 @@ def set_model(opt):
             return None
 
 
-def load_model(opt, model, load_ckpt=None):
+def load_model(opt, load_ckpt=None):
     if load_ckpt:
         ckpt = torch.load(load_ckpt, map_location='cpu')
     else:
@@ -65,7 +59,7 @@ def load_model(opt, model, load_ckpt=None):
     ckpt_opt = ckpt['opt']
     for key, val in ckpt_opt.__dict__.items():
         setattr(opt, key, val)
-
+    model = set_model(opt)
     state_dict = ckpt['model']
     if torch.cuda.is_available():
         new_state_dict = {}
