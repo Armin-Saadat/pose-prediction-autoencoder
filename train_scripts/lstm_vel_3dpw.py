@@ -68,11 +68,11 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
         val_s_scores.append(avg_epoch_val_speed_loss.avg)
         scheduler.step(avg_epoch_train_speed_loss.avg)
 
-        print('e:', epoch, '| train_speed_loss: %.2f' % avg_epoch_train_speed_loss.avg,
-              '| validation_speed_loss: %.2f' % avg_epoch_val_speed_loss.avg,
-              '| ade_train: %.2f' % ade_train.avg,
-              '| ade_val: %.2f' % ade_val.avg, '| fde_train: %.2f' % fde_train.avg, '| fde_val: %.2f' % fde_val.avg,
-              '| epoch_time.avg:%.2f' % (time.time() - start))
+        print('e:', epoch, '| train_speed_loss: %.5f' % avg_epoch_train_speed_loss.avg,
+              '| validation_speed_loss: %.5f' % avg_epoch_val_speed_loss.avg,
+              '| ade_train: %.5f' % ade_train.avg,
+              '| ade_val: %.5f' % ade_val.avg, '| fde_train: %.5f' % fde_train.avg, '| fde_val: %.5f' % fde_val.avg,
+              '| epoch_time.avg:%.5f' % (time.time() - start))
     print('*' * 100)
     print('TRAINING 3dpw DONE in {} !'.format(time.time() - training_start))
 
