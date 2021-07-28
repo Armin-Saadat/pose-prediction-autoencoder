@@ -32,6 +32,7 @@ class AverageMeter(object):
         self.count += n
         self.avg = self.sum / self.count
 
+
 def set_model(opt):
     if opt.model_name == 'lstm_vel':
         if opt.dataset_name == 'posetrack':
