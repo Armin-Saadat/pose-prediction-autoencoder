@@ -1,3 +1,4 @@
+import json
 import argparse
 import torch
 import torch.nn as nn
@@ -21,6 +22,7 @@ def parse_option():
     parser.add_argument('--dropout_encoder', type=float, default=0)
     parser.add_argument('--dropout_pose_decoder', type=float, default=0)
     parser.add_argument('--dropout_mask_decoder', type=float, default=0)
+    parser.add_argument('--test_output', type=bool, default=False)
 
     opt = parser.parse_args()
     opt.stride = opt.input
@@ -28,10 +30,11 @@ def parse_option():
     opt.dataset_name = 'posetrack'
     opt.loader_shuffle = True
     opt.pin_memory = False
+    opt.device = 'cuda'
     return opt
 
 
-def predict(loader, global_model, local_model):
+def predict(loader, global_model, local_model, opt):
     global_model.eval()
     local_model.eval()
     l1e = nn.L1Loss()
@@ -43,15 +46,15 @@ def predict(loader, global_model, local_model):
     ade_val = AverageMeter()
     fde_val = AverageMeter()
     for idx, (obs_velocities, target_velocities, obs_pose, target_pose, obs_mask, target_mask) in enumerate(loader):
-        global_vel_obs = obs_velocities[:, :, :2].to(device='cuda')
-        local_vel_obs = obs_velocities[:, :, 2:].to(device='cuda')
-        global_vel_targets = target_velocities[:, :, :2].to(device='cuda')
-        local_vel_targets = target_velocities[:, :, 2:].to(device='cuda')
-        global_pose_obs = obs_pose[:, :, :2].to(device='cuda')
-        local_pose_obs = obs_pose[:, :, 2:].to(device='cuda')
-        target_pose = target_pose.to(device='cuda')
-        obs_mask = obs_mask.to(device='cuda')
-        target_mask = target_mask.to(device='cuda')
+        global_vel_obs = obs_velocities[:, :, :2].to(opt.device)
+        local_vel_obs = obs_velocities[:, :, 2:].to(opt.device)
+        global_vel_targets = target_velocities[:, :, :2].to(opt.device)
+        local_vel_targets = target_velocities[:, :, 2:].to(opt.device)
+        global_pose_obs = obs_pose[:, :, :2].to(opt.device)
+        local_pose_obs = obs_pose[:, :, 2:].to(opt.device)
+        target_pose = target_pose.to(opt.device)
+        obs_mask = obs_mask.to(opt.device)
+        target_mask = target_mask.to(opt.device)
         with torch.no_grad():
             global_vel_preds = global_model(pose=global_pose_obs, vel=global_vel_obs)
             local_vel_preds, _ = local_model(pose=local_pose_obs, vel=local_vel_obs, mask=obs_mask)
@@ -81,6 +84,35 @@ def predict(loader, global_model, local_model):
           '| ade_val: %.2f' % ade_val.avg, '| fde_val: %.2f' % fde_val.avg,
           '| epoch_time.avg:%.2f' % (time.time() - start))
     sys.stdout.flush()
+    if opt.test_output:
+        with open("./Posetrack/posetrack_test_in.json", "r") as read_file:
+            data = json.load(read_file)
+
+        with open("./Posetrack/posetrack_test_masks_in.json", "r") as read_file:
+            data_m = json.load(read_file)
+
+        out_data = []
+        out_mask = []
+        for i in range(len(data)):
+            lp = []
+            lm = []
+            for j in range(len(data[i])):
+                pose = torch.tensor(data[i][j]).unsqueeze(0).to(opt.device)
+                mask = torch.tensor(data_m[i][j]).unsqueeze(0).to(opt.device)
+                vel = pose[:, 1:] - pose[:, :-1]
+                (speed_preds, mask_preds) = model(pose=pose, vel=vel, mask=mask)
+
+                preds_p = speed2pos(speed_preds, pose)
+                pred = preds_p.squeeze(0)
+                mask_pred = mask_preds.squeeze(0)
+                lp.append(pred.tolist())
+                lm.append(mask_pred.detach().cpu().numpy().round().tolist())
+            out_data.append(lp)
+            out_mask.append(lm)
+        with open('../outputs/Posetrack/posetrack_predictions_{}.json'.format('disentangling'), 'w') as f:
+            json.dump(out_data, f)
+        with open('../outputs/posetrack_masks_{}.json'.format('disentangling'), 'w') as f:
+            json.dump(out_mask, f)
 
 
 def regenerate_entire_pose(global_pose: torch.Tensor, local_pose: torch.Tensor):
@@ -96,15 +128,13 @@ if __name__ == '__main__':
     opt.model_name = 'de_predict'
     _, val_loader = set_dataloader(opt)
     opt.model_name = 'de_global'
-    global_model = set_model(opt)
-    opt.model_name = 'de_local'
-    local_model = set_model(opt)
     if opt.load_global_ckpt is not None:
         global_model = load_model(opt, opt.load_global_ckpt)
     else:
         raise EnvironmentError
+    opt.model_name = 'de_local'
     if opt.load_local_ckpt is not None:
         local_model = load_model(opt, opt.load_local_ckpt)
     else:
         raise EnvironmentError
-    predict(val_loader, global_model, local_model)
+    predict(val_loader, global_model, local_model, opt)
