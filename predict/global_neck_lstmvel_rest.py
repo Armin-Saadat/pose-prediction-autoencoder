@@ -16,7 +16,7 @@ def parse_option():
     parser.add_argument('--hidden_size', type=int, default=1000)
     parser.add_argument('--hardtanh_limit', type=int, default=100)
     parser.add_argument('--load_global_ckpt', type=str)
-    parser.add_argument('--load_lstm_vel_ckpt', type=str)
+    parser.add_argument('--load_lstmvel_ckpt', type=str)
     parser.add_argument('--dropout_encoder', type=float, default=0)
     parser.add_argument('--dropout_pose_decoder', type=float, default=0)
     parser.add_argument('--dropout_mask_decoder', type=float, default=0)
@@ -66,7 +66,7 @@ def predict(loader, global_model, lstm_vel_model):
             avg_epoch_mask_acc.update(val=float(mask_acc), n=target_mask.shape[0])
             global_pose_pred = speed2pos(global_vel_preds, global_pose_obs)
             pose_pred = speed2pos(speed_preds, obs_pose)
-            preds_p = torch.cat( (global_pose_pred, pose_pred[:, :, 2:]), 2)
+            preds_p = torch.cat((global_pose_pred, pose_pred[:, :, 2:]), 2)
             ade_val.update(val=float(ADE_c(preds_p, target_pose)), n=target_pose.shape[0])
             fde_val.update(val=float(FDE_c(preds_p, target_pose)), n=target_pose.shape[0])
 
@@ -94,9 +94,9 @@ if __name__ == '__main__':
     opt.model_name = 'de_global'
     global_model = set_model(opt)
     if opt.load_global_ckpt is not None:
-        global_model = load_model(opt, global_model, opt.load_global_ckpt)
+        global_model = load_model(opt, opt.load_global_ckpt)
     else:
         raise EnvironmentError
-    if opt.load_lstm_vel_ckpt is not None:
-        lstm_vel_model = load_model(opt, lstm_vel_model, opt.load_lstm_vel_ckpt)
+    if opt.load_lstmvel_ckpt is not None:
+        lstm_vel_model = load_model(opt, opt.load_lstmvel_ckpt)
     predict(val_loader, global_model, lstm_vel_model)
