@@ -49,7 +49,9 @@ def predict(loader, model):
         obs_mask = obs_mask.to(device='cuda')
         target_mask = target_mask.to(device='cuda')
         with torch.no_grad():
-            speed_preds, mask_preds = model(pose=obs_pose, vel=obs_s, mask=obs_mask)
+            speed_preds, _ = model(pose=obs_pose, vel=obs_s, mask=obs_mask)
+            m = obs_mask[:, -1:, :]
+            mask_preds = torch.cat((m, m, m, m, m, m, m, m, m, m, m, m, m, m), 1)
 
             speed_loss = l1e(speed_preds, target_s)
             mask_loss = bce(mask_preds, target_mask)
