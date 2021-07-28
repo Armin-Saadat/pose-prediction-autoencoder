@@ -93,7 +93,9 @@ def predict(loader, model, opt):
                 pose = torch.tensor(data[i][j]).unsqueeze(0).to(opt.device)
                 mask = torch.tensor(data_m[i][j]).unsqueeze(0).to(opt.device)
                 vel = pose[:, 1:] - pose[:, :-1]
-                (speed_preds, mask_preds) = model(pose=pose, vel=vel, mask=mask)
+                (speed_preds, _) = model(pose=pose, vel=vel, mask=mask)
+                m = mask[:, -1:, :]
+                mask_preds = torch.cat((m, m, m, m, m, m, m, m, m, m, m, m, m, m), 1)
 
                 preds_p = speed2pos(speed_preds, pose)
                 pred = preds_p.squeeze(0)

@@ -97,14 +97,20 @@ def predict(loader, global_model, local_model, opt):
             lp = []
             lm = []
             for j in range(len(data[i])):
+                # TODO: bug below
                 pose = torch.tensor(data[i][j]).unsqueeze(0).to(opt.device)
                 mask = torch.tensor(data_m[i][j]).unsqueeze(0).to(opt.device)
                 vel = pose[:, 1:] - pose[:, :-1]
-                (speed_preds, mask_preds) = model(pose=pose, vel=vel, mask=mask)
+                global_vel_preds_t = global_model(pose=global_pose_obs, vel=global_vel_obs)
+                local_vel_preds_t, _ = local_model(pose=local_pose_obs, vel=local_vel_obs, mask=mask)
+                global_pose_pred_t = speed2pos(global_vel_preds_t, global_pose_obs)
+                local_pose_pred_t = speed2pos_local(local_vel_preds_t, local_pose_obs)
+                pose_pred_t = regenerate_entire_pose(global_pose_pred_t, local_pose_pred_t)
+                m = mask[:, -1:, :]
+                mask_preds_test = torch.cat((m, m, m, m, m, m, m, m, m, m, m, m, m, m), 1)
 
-                preds_p = speed2pos(speed_preds, pose)
-                pred = preds_p.squeeze(0)
-                mask_pred = mask_preds.squeeze(0)
+                pred = pose_pred_t.squeeze(0)
+                mask_pred = mask_preds_test.squeeze(0)
                 lp.append(pred.tolist())
                 lm.append(mask_pred.detach().cpu().numpy().round().tolist())
             out_data.append(lp)
