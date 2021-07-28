@@ -1,10 +1,13 @@
 import argparse
+import json
+import sys
+import time
+
 import torch
 import torch.nn as nn
-import time
-from utils.others import set_dataloader, set_model, load_model, AverageMeter, speed2pos3d
+
 from utils.metrices import ADE_3d, FDE_3d
-import sys
+from utils.others import set_dataloader, set_model, load_model, AverageMeter, speed2pos3d
 
 
 def parse_option():
@@ -30,7 +33,7 @@ def parse_option():
     return opt
 
 
-def predict(loader, model):
+def predict(loader, model, opt):
     model.eval()
     l1e = nn.L1Loss()
     start = time.time()
@@ -38,10 +41,10 @@ def predict(loader, model):
     ade_val = AverageMeter()
     fde_val = AverageMeter()
     for idx, (obs_s, target_s, obs_pose, target_pose) in loader:
-        obs_s = obs_s.to(device='cuda')
-        target_s = target_s.to(device='cuda')
-        obs_pose = obs_pose.to(device='cuda')
-        target_pose = target_pose.to(device='cuda')
+        obs_s = obs_s.to(opt.device)
+        target_s = target_s.to(opt.device)
+        obs_pose = obs_pose.to(opt.device)
+        target_pose = target_pose.to(opt.device)
         with torch.no_grad():
             speed_preds = model(pose=obs_pose, vel=obs_s)
             speed_loss = l1e(speed_preds, target_s)
@@ -55,13 +58,34 @@ def predict(loader, model):
           '| ade_val: %.2f' % ade_val.avg, '| fde_val: %.2f' % fde_val.avg,
           '| epoch_time.avg:%.2f' % (time.time() - start))
     sys.stdout.flush()
+    if opt.test_output:
+        with open("./3dpw/3dpw_test_in.json", "r") as read_file:
+            data = json.load(read_file)
+
+        out_data = []
+        for i in range(len(data)):
+            lp = []
+            lm = []
+            for j in range(len(data[i])):
+                pose = torch.tensor(data[i][j]).unsqueeze(0).to(opt.device)
+                vel = pose[:, 1:] - pose[:, :-1]
+                speed_preds = model(pose=pose, vel=vel)
+
+                preds_p = speed2pos3d(speed_preds, pose)
+                pred = preds_p.squeeze(0)
+                lp.append(pred.tolist())
+            out_data.append(lp)
+        with open('./3dpw/3dpw_predictions_{}.json'.format(
+                opt.load_ckpt.split('snapshots/')[1].split('.pth')[0]), 'w') as f:
+            json.dump(out_data, f)
 
 
 if __name__ == '__main__':
     opt = parse_option()
+    load_ckpt = opt.load_ckpt
     _, val_loader = set_dataloader(opt)
     model = set_model(opt)
     if opt.load_ckpt is not None:
         model = load_model(opt)
-
-    predict(val_loader, model)
+    opt.load_ckpt = load_ckpt
+    predict(val_loader, model, opt)

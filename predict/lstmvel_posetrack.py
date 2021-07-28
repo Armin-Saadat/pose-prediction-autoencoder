@@ -1,11 +1,14 @@
 import argparse
+import json
+import sys
+import time
+
 import torch
 import torch.nn as nn
-from utils.others import set_dataloader, set_model, load_model, AverageMeter, speed2pos
+
 from utils.metrices import ADE_c, FDE_c, mask_accuracy
-import time
-import sys
-import json
+from utils.others import set_dataloader, set_model, load_model, AverageMeter, speed2pos
+
 
 def parse_option():
     parser = argparse.ArgumentParser('argument for predictions')
@@ -29,7 +32,8 @@ def parse_option():
     opt.loader_shuffle = True
     opt.pin_memory = False
     opt.model_name = 'lstm_vel'
-    opt.device ='cuda'
+    opt.device = 'cuda'
+
     return opt
 
 
@@ -72,10 +76,10 @@ def predict(loader, model, opt):
           '| epoch_time.avg:%.2f' % (time.time() - start))
     sys.stdout.flush()
     if opt.test_output:
-        with open("../Posetrack/posetrack_test_in.json", "r") as read_file:
+        with open("./Posetrack/posetrack_test_in.json", "r") as read_file:
             data = json.load(read_file)
 
-        with open("../Posetrack/posetrack_test_masks_in.json", "r") as read_file:
+        with open("./Posetrack/posetrack_test_masks_in.json", "r") as read_file:
             data_m = json.load(read_file)
 
         out_data = []
@@ -96,16 +100,20 @@ def predict(loader, model, opt):
                 lm.append(mask_pred.detach().cpu().numpy().round().tolist())
             out_data.append(lp)
             out_mask.append(lm)
-        with open('../Posetrack/posetrack_predictions_{}.json'.format(opt.load_ckpt), 'w') as f:
+        with open('./Posetrack/posetrack_predictions_{}.json'.format(
+                opt.load_ckpt.split('snapshots/')[1].split('.pth')[0]), 'w') as f:
             json.dump(out_data, f)
-        with open('../Posetrack/posetrack_masks_{}.json'.format(opt.load_ckpt), 'w') as f:
+        with open('./Posetrack/posetrack_masks_{}.json'.format(opt.load_ckpt.split('snapshots/')[1].split('.pth')[0]),
+                  'w') as f:
             json.dump(out_mask, f)
+
 
 if __name__ == '__main__':
     opt = parse_option()
+    load_ckpt = opt.load_ckpt
     _, val_loader = set_dataloader(opt)
     model = set_model(opt)
     if opt.load_ckpt is not None:
         model = load_model(opt)
-
+    opt.load_ckpt = load_ckpt
     predict(val_loader, model, opt)
