@@ -78,10 +78,10 @@ def predict(loader, model, opt):
           '| epoch_time.avg:%.2f' % (time.time() - start))
     sys.stdout.flush()
     if opt.test_output:
-        with open("./Posetrack/posetrack_test_in.json", "r") as read_file:
+        with open("../outputs/Posetrack/posetrack_test_in.json", "r") as read_file:
             data = json.load(read_file)
 
-        with open("./Posetrack/posetrack_test_masks_in.json", "r") as read_file:
+        with open("../outputs/Posetrack/posetrack_test_masks_in.json", "r") as read_file:
             data_m = json.load(read_file)
 
         out_data = []
@@ -107,7 +107,7 @@ def predict(loader, model, opt):
         with open('../outputs/Posetrack/posetrack_predictions_{}.json'.format(
                 opt.load_ckpt.split('snapshots/')[1].split('.pth')[0]), 'w') as f:
             json.dump(out_data, f)
-        with open('../outputs/posetrack_masks_{}.json'.format(opt.load_ckpt.split('snapshots/')[1].split('.pth')[0]),
+        with open('../outputs/Posetrack/posetrack_masks_{}.json'.format(opt.load_ckpt.split('snapshots/')[1].split('.pth')[0]),
                   'w') as f:
             json.dump(out_mask, f)
 

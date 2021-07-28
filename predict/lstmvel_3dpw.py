@@ -61,7 +61,7 @@ def predict(loader, model, opt):
           '| epoch_time.avg:%.2f' % (time.time() - start))
     sys.stdout.flush()
     if opt.test_output:
-        with open("./3dpw/3dpw_test_in.json", "r") as read_file:
+        with open("../outputs/3dpw/3dpw_test_in.json", "r") as read_file:
             data = json.load(read_file)
 
         out_data = []
@@ -77,7 +77,7 @@ def predict(loader, model, opt):
                 pred = preds_p.squeeze(0)
                 lp.append(pred.tolist())
             out_data.append(lp)
-        with open('../outputs/3dpw_predictions_{}.json'.format(
+        with open('../outputs/3dpw/3dpw_predictions_{}.json'.format(
                 opt.load_ckpt.split('snapshots/')[1].split('.pth')[0]), 'w') as f:
             json.dump(out_data, f)
 
