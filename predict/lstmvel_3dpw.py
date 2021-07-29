@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 
 from utils.metrices import ADE_3d, FDE_3d
-from utils.others import set_dataloader, set_model, load_model, AverageMeter, speed2pos3d
+from utils.others import set_dataloader, load_model, AverageMeter, speed2pos3d
 
 
 def parse_option():
@@ -84,9 +84,9 @@ def predict(loader, model, opt):
 
 if __name__ == '__main__':
     opt = parse_option()
-    load_ckpt = opt.load_ckpt
     _, val_loader = set_dataloader(opt)
     if opt.load_ckpt is not None:
         model = load_model(opt)
-    opt.load_ckpt = load_ckpt
+    else:
+        raise EnvironmentError
     predict(val_loader, model, opt)
