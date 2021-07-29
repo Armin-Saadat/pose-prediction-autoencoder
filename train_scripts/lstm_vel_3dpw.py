@@ -62,7 +62,7 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
                 avg_epoch_val_speed_loss.update(float(speed_loss), n=batch_size)
 
                 preds_p = speed2pos3d(speed_preds, obs_pose)
-                ade_train.update(float(ADE_3d(preds_p, target_pose)), n=batch_size)
+                ade_val.update(float(ADE_3d(preds_p, target_pose)), n=batch_size)
                 fde_val.update(FDE_3d(preds_p, target_pose), n=batch_size)
 
         val_s_scores.append(avg_epoch_val_speed_loss.avg)
