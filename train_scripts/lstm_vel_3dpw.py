@@ -31,7 +31,7 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
             batch_size = obs_s.shape[0]
             model.zero_grad()
 
-            (speed_preds, ) = model(pose=obs_pose, vel=obs_s)
+            speed_preds = model(pose=obs_pose, vel=obs_s)
             speed_loss = l1e(speed_preds, target_s)
 
             preds_p = speed2pos3d(speed_preds, obs_pose)
@@ -56,7 +56,7 @@ def train(train_loader, val_loader, model, optimizer, scheduler, opt):
             batch_size = obs_s.shape[0]
 
             with torch.no_grad():
-                (speed_preds, ) = model(pose=obs_pose, vel=obs_s)
+                speed_preds = model(pose=obs_pose, vel=obs_s)
 
                 speed_loss = l1e(speed_preds, target_s)
                 avg_epoch_val_speed_loss.update(float(speed_loss), n=batch_size)
