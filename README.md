@@ -1,3 +1,3 @@
-# Social Motion Forecasting (SoMoF) Benchmark
+# Social Motion Forecasting (SoMoF)
 
 https://somof.stanford.edu/
