@@ -62,15 +62,16 @@ posepred
 
 ## Proposed method LSTMV_LAST
 -------------
-We decouple the pose forecasting into a global trajectory forecasting and a local pose forecasting as shown below:
+The proposed method is a sequence to sequence LSTM model based on [pv-lstm](https://github.com/vita-epfl/bounding-box-prediction). It takes as input the velocities and the positions of observed past joints and outputs the predicted velocities of the future joints, from which the future positions can be computed. As figure below shows, the model encodes the position and the velocity of each person into a hidden layer which will be used as the initial state for the decoder. Using the encoded state, the decoder takes the velocity of the last observed frame as input and generates the predicted velocity for the first future frame which will be used as the input to the next LSTM cell. To train this model, the l1 loss between the predicted and ground-truth velocities is leveraged.
+
 ![Our proposed method](images/network.png)
 
 
 ## Results
 
-We show the observed (left) and the predicted (right) poses for two different scenarios. The rows correspond to DeRPoF w/o early stop and w/o Decoupling from top to bottom. Only the pose of every other frame is shown. 
-![a](images/fig4--a.png)
-![b](images/fig4--b.png)
+You can see the comparative results of our model with many different baselines such as zero-vel, SC-MPF and TRiPOD on bot PoseTrack and 3DPW down below.   
+![a](images/result1.png)
+![b](images/result2.png)
 
 ## Installation:
 ------------
