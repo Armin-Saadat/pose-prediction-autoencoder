@@ -14,7 +14,7 @@ This is the official code for the Abstract ["Towards Human Pose Prediction using
   * [Results](#results)
   * [Installation](#installation)
   * [Dataset](#dataset)
-  * [Training/Testing/Predicting](#Training-Testing-Predicting)
+  * [Training/Validating/Predicting](#trainingvalidatingpredicting)
   * [Arguments](#Arguments)
   * [Tested Environments](#tested-environments)
 
