@@ -9,14 +9,16 @@ This is the official code for the Abstract ["Towards Human Pose Prediction using
 
 ## Contents
 ------------
-  * [Repository Structure](#repository-structure)
-  * [Proposed Method](#proposed-method-DeRPoF)
+  * [Repository Structure](#Repository-Structure)
+  * [Proposed Method](#Proposed-Method-LSTMV_LAST)
   * [Results](#results)
   * [Installation](#installation)
   * [Dataset](#dataset)
-  * [Training/Testing/Predicting](#training-testing)
+  * [Training/Testing/Predicting](#Training-Testing-Predicting)
+  * [Arguments](#Arguments)
   * [Tested Environments](#tested-environments)
 
+## Repository Structure
 ```
 posepred
 ├── dataloader
@@ -60,7 +62,7 @@ posepred
 
 ```
 
-## Proposed method LSTMV_LAST
+## Proposed Method LSTMV_LAST
 -------------
 The proposed method is a sequence to sequence LSTM model based on [pv-lstm](https://github.com/vita-epfl/bounding-box-prediction). It takes as input the velocities and the positions of observed past joints and outputs the predicted velocities of the future joints, from which the future positions can be computed. As figure below shows, the model encodes the position and the velocity of each person into a hidden layer which will be used as the initial state for the decoder. Using the encoded state, the decoder takes the velocity of the last observed frame as input and generates the predicted velocity for the first future frame which will be used as the input to the next LSTM cell. To train this model, the l1 loss between the predicted and ground-truth velocities is leveraged.
 
@@ -165,7 +167,7 @@ python3 -m predict.lstmvel_posetrack --load_ckpt="../snapshots/lstm_vel_epoch250
 
 Example for training:
 ```bash
-!python3 -m train_scripts.lstmvel_posetrack --learning_rate=0.01 --lr_decay_rate=0.8 --batch_size=3000 --save_freq=100 --epochs=250 --name='local_lr0.01_dec0.8'
+python3 -m train_scripts.lstmvel_posetrack --learning_rate=0.01 --lr_decay_rate=0.8 --batch_size=3000 --save_freq=100 --epochs=250 --name='local_lr0.01_dec0.8'
 ```
 
 ## Tested Environments:
