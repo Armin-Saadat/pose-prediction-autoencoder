@@ -6,7 +6,6 @@ _Human pose prediction is defined as predicting the hu-man  keypoints  locations
 
 ## Introduction:
 This is the official code for the Abstract ["Towards Human Pose Prediction using the Encoder-Decoder LSTM"](link), accepted and published in ["ICCVW 2021"](https://somof.stanford.edu/workshops/iccv21)
-You can find report in [here]() 
 
 ## Contents
 ------------
@@ -70,8 +69,8 @@ We decouple the pose forecasting into a global trajectory forecasting and a loca
 ## Results
 
 We show the observed (left) and the predicted (right) poses for two different scenarios. The rows correspond to DeRPoF w/o early stop and w/o Decoupling from top to bottom. Only the pose of every other frame is shown. 
-![a](figures/fig4--a.png)
-![b](figures/fig4--b.png)
+![a](images/fig4--a.png)
+![b](images/fig4--b.png)
 
 ## Installation:
 ------------
@@ -126,6 +125,47 @@ python lstmvel_3dpw.py --load_ckpt=<path_to_saved_snapshot.pth>
 where other options are similar to the training. 
 
 We also have implemented many other models that you can see in models/ directory. If you want to run those, you have to repeat aforementioned procedure for those models. 
+## Arguments
+This is a description to provide details about arguments of Posepred API.
+Pospred is an open-source toolbox for pose prediction in PyTorch. It is a part of the VitaLab project.
+```  
+usage: python -m train_scripts.lstm_vel_posetrack [-h] [--dataset_name] [--dataset_path] [--data_usage]                          	
+	                             [--obs_frames_num] [--pred_frames_num] [--keypoint_dim]
+				     [--interactive] [--use_mask] [--skip_num]  
+	                             [--use_video_once] [--output_name] [--annotaion]
+  
+mandatory arguments:  
+  --batch_size          size of batch size (int, default=80) (only use in training) 
+  --epochs              Number of epochd (int, default=200)  (only use in training) 
+  --learning_rate       learning_rate  (float, default=0.01) (only use in training) 
+  --lr_decay_rate       Decay learning rate by <lr_decay_rate> on plataeu (flaot, default=0.25)  (only use in training) 
+  --output              Number of frames to predict (int, default=14)     
+  --hidden_size         Size of hidden layer in LSTM (int, defalut=1000) (only use in training) 
+  --load_ckpt          Load model from <load_ckpt> path (use only in prediction)
+
+    
+optional arguments:  
+  -h, --help               Show this help message and exit  
+  --num_workers            How many workers to use (default=1)
+  --pin_memory             Pin memory or not (default=False)
+  --device		               On which device does the training appear (default='cuda') 
+  --n_layers        	      Number of frame to skip between each two used frames (int, default=1) (only use in training) 
+  --name                   Name of saved snapshot (str, default=None)
+  --dropout_encoder        How much of data should be dropped through training (default=0) (use only in training)
+  --dropout_pose_decoder   How much of pose data should be dropped in pose decoder through training (default=0) (only use in training) 
+  --dropout_mask_decoder   How much of mask data should be dropped in mask decoder through training (default=0) (only use in training) 
+  -- save_folder           To which folder should model weight be saved (only use in training) 
+  -- save_freq             Every <save_freq> epochs save the model (only use in training) 
+```  
+Example for predictiong:  
+```bash  
+python3 -m predict.lstmvel_posetrack --load_ckpt="../snapshots/lstm_vel_epoch250.pth"  
+```  
+
+Example for training:
+```bash
+!python3 -m train_scripts.lstmvel_posetrack --learning_rate=0.01 --lr_decay_rate=0.8 --batch_size=3000 --save_freq=100 --epochs=250 --name='local_lr0.01_dec0.8'
+```
 
 ## Tested Environments:
 ------------
