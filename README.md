@@ -73,7 +73,7 @@ The proposed method is a sequence to sequence LSTM model based on [pv-lstm](http
 
 ## Results
 
-You can see the comparative results of our model with many different baselines such as zero-vel, SC-MPF and TRiPOD on bot PoseTrack and 3DPW down below.   
+You can see the comparative results of our model with many different baselines such as zero-vel, SC-MPF and TRiPOD on both PoseTrack and 3DPW down below.   
 ![a](statics/result1.png)
 ![b](statics/result2.png)
 
@@ -96,9 +96,9 @@ pip install -r requirements.txt
 
 ## Dataset:
   
-  * We use the preprocessed posetrack and 3dpw datasets in [SoMoF](https://somof.stanford.edu/dataset) challenge. For easy usage,these datasets are preprocessed. The clean version of dataset is available at /preprocess_csvs. 
+  * We use the preprocessed posetrack and 3dpw datasets in [SoMoF](https://somof.stanford.edu/dataset) challenge. For easy usage, these datasets are preprocessed. The clean version of dataset is available at /preprocess_csvs. 
   
-## Training/Validating/Predicting:
+## Training / Validation / Prediction:
 In order to train the model for posetrack:
 
 ```
