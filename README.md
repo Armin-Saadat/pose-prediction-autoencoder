@@ -4,10 +4,10 @@ Ranked <b>3rd</b> at Social Motion Forecasting ([SoMoF](https://somof.stanford.e
 
 ## _Absract_:
 
-Human pose prediction is defined as predicting the hu-man  keypoints  locations  for  future  frames,  given  the  ob-served ones for past frames.  It has numerous applicationsin various fields like autonomous driving.  This task can beseen as a fine-grained task while human bounding box pre-diction  deals  with  more  coarse-grained  information.   Theformer has been investigated less and here, we modify oneof the previously-used architectures of bounding box pre-diction to do a harder task of pose prediction in the SoMoFchallenge. 	The results show the effectiveness of the pro-posed method in evaluation metrics.
+Human pose prediction is defined as predicting the human  keypoints  locations  for  future  frames,  given  the  observed ones for past frames.  It has numerous applicationsin in various fields like autonomous driving.  This task can be seen as a fine-grained task while human bounding box prediction  deals  with  more  coarse-grained  information. The former has been investigated less and here, we modify one of the previously used architectures of bounding box prediction to do a harder task of pose prediction in the SoMoF challenge. The results show the effectiveness of the proposed method in evaluation metrics.
 
 ## Introduction:
-This is the official code for the Abstract ["Towards Human Pose Prediction using the Encoder-Decoder LSTM"](statics/Towards-human-prediction-using-encoder-decoder-lstm.pdf), accepted and published in ["ICCVW 2021"](https://somof.stanford.edu/workshops/iccv21)
+This is the official code for the extended abstract ["Towards Human Pose Prediction using the Encoder-Decoder LSTM"](statics/Towards-human-prediction-using-encoder-decoder-lstm.pdf), accepted and published in ["ICCVW 2021"](https://somof.stanford.edu/workshops/iccv21)
 
 ## Table of Contents
 ------------
