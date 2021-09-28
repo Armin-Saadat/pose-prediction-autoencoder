@@ -5,7 +5,7 @@
 _Human pose prediction is defined as predicting the hu-man  keypoints  locations  for  future  frames,  given  the  ob-served ones for past frames.  It has numerous applicationsin various fields like autonomous driving.  This task can beseen as a fine-grained task while human bounding box pre-diction  deals  with  more  coarse-grained  information.   Theformer has been investigated less and here, we modify oneof the previously-used architectures of bounding box pre-diction to do a harder task of pose prediction in the SoMoFchallenge.   The results show the effectiveness of the pro-posed method in evaluation metrics.
 
 ## Introduction:
-This is the official code for the Abstract ["Towards Human Pose Prediction using the Encoder-Decoder LSTM"](link), accepted and published in ["ICCVW 2021"](https://somof.stanford.edu/workshops/iccv21)
+This is the official code for the Abstract ["Towards Human Pose Prediction using the Encoder-Decoder LSTM"](statics/Towards-human-prediction-using-encoder-decoder-lstm.pdf), accepted and published in ["ICCVW 2021"](https://somof.stanford.edu/workshops/iccv21)
 
 ## Contents
 ------------
@@ -66,7 +66,7 @@ posepred
 -------------
 The proposed method is a sequence to sequence LSTM model based on [pv-lstm](https://github.com/vita-epfl/bounding-box-prediction). It takes as input the velocities and the positions of observed past joints and outputs the predicted velocities of the future joints, from which the future positions can be computed. As figure below shows, the model encodes the position and the velocity of each person into a hidden layer which will be used as the initial state for the decoder. Using the encoded state, the decoder takes the velocity of the last observed frame as input and generates the predicted velocity for the first future frame which will be used as the input to the next LSTM cell. To train this model, the l1 loss between the predicted and ground-truth velocities is leveraged.
 
-![Our proposed method](images/network.png)
+![Our proposed method](statics/method.png)
 
 
 ## Results
