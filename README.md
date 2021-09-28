@@ -9,7 +9,7 @@ Human pose prediction is defined as predicting the hu-man  keypoints  locations 
 ## Introduction:
 This is the official code for the Abstract ["Towards Human Pose Prediction using the Encoder-Decoder LSTM"](statics/Towards-human-prediction-using-encoder-decoder-lstm.pdf), accepted and published in ["ICCVW 2021"](https://somof.stanford.edu/workshops/iccv21)
 
-## Contents
+## Table of Contents
 ------------
   * [Repository Structure](#Repository-Structure)
   * [Proposed Method](#Proposed-Method-LSTMV_LAST)
