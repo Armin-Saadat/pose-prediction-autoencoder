@@ -1,6 +1,6 @@
 # Towards Human Pose Prediction using the Encoder-Decoder LSTM 
 
-Ranked <b>3rd</b> at Social Motion Forecasting ([SoMoF](https://somof.stanford.edu/)) Benchmark which is a challenge held by Stanford University.
+Ranked <b>3rd</b> at Social Motion Forecasting ([SoMoF](https://somof.stanford.edu/)) Benchmark, a challenge held by <b>Stanford University</b>.
 
 ## _Absract_:
 
