@@ -81,9 +81,9 @@ You can see the comparative results of our model with many different baselines s
 
 <br />
 <p align="center">
-	<img height="230" src="statics/result1.png" alt="PoseTrack Results"/>		
+	<img height="180" src="statics/result1.png" alt="PoseTrack Results"/>		
 	<br /><br /><br />
-	<img height="230" src="statics/result2.png" alt="3DPW Results"/>
+	<img height="180" src="statics/result2.png" alt="3DPW Results"/>
 </p>
 
 <!-- ![a](statics/result1.png) -->
