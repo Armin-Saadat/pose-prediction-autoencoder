@@ -71,7 +71,7 @@ The proposed method is a sequence to sequence LSTM model based on [pv-lstm](http
 
 ![Our proposed method](statics/method.png)
 
-<img align="statics/method.png" src="..." alt="Our proposed method">
+<img align="center" src="statics/method.png" alt="Our proposed method">
 
 
 ## Results
