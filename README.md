@@ -77,7 +77,8 @@ The proposed method is a sequence to sequence LSTM model based on [pv-lstm](http
 ## Results
 
 You can see the comparative results of our model with many different baselines such as zero-vel, SC-MPF and TRiPOD on both PoseTrack and 3DPW down below.   
-![a](statics/result1.png)
+<!-- ![a](statics/result1.png) -->
+<img align="center" src="statics/result1.png" alt="Our proposed method">
 ![b](statics/result2.png)
 
 ## Installation:
