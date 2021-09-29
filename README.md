@@ -11,7 +11,7 @@ This is the official code for the extended abstract ["Towards Human Pose Predict
 
 ## Table of Contents
 ------------
-  * [Repository Structure](#Repository-Structure)
+<!--   * [Repository Structure](#Repository-Structure) -->
   * [Proposed Method](#Proposed-Method-LSTMV_LAST)
   * [Results](#results)
   * [Installation](#installation)
@@ -20,7 +20,7 @@ This is the official code for the extended abstract ["Towards Human Pose Predict
   * [Arguments](#Arguments)
   * [Tested Environments](#tested-environments)
 
-## Repository Structure
+<!-- ## Repository Structure
 ```
 posepred
 ├── dataloader
@@ -63,19 +63,31 @@ posepred
 |   └── others.py                       -- other useful utils
 
 ```
-
-## Proposed Method LSTMV_LAST
+ -->
+## Proposed Method
 -------------
 The proposed method is a sequence to sequence LSTM model based on [pv-lstm](https://github.com/vita-epfl/bounding-box-prediction). It takes as input the velocities and the positions of observed past joints and outputs the predicted velocities of the future joints, from which the future positions can be computed. As figure below shows, the model encodes the position and the velocity of each person into a hidden layer which will be used as the initial state for the decoder. Using the encoded state, the decoder takes the velocity of the last observed frame as input and generates the predicted velocity for the first future frame which will be used as the input to the next LSTM cell. To train this model, the l1 loss between the predicted and ground-truth velocities is leveraged.
 
-![Our proposed method](statics/method.png)
+<p align="center">
+	<img src="statics/method.png" alt="Our proposed method"/>
+</p>
+
+<!-- ![Our proposed method](statics/method.png) -->
 
 
 ## Results
 
 You can see the comparative results of our model with many different baselines such as zero-vel, SC-MPF and TRiPOD on both PoseTrack and 3DPW down below.   
-![a](statics/result1.png)
-![b](statics/result2.png)
+
+<br />
+<p align="center">
+	<img height="230" src="statics/result1.png" alt="PoseTrack Results"/>		
+	<br /><br /><br />
+	<img height="230" src="statics/result2.png" alt="3DPW Results"/>
+</p>
+
+<!-- ![a](statics/result1.png) -->
+<!-- ![b](statics/result2.png) -->
 
 ## Installation:
 ------------
