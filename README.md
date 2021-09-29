@@ -68,9 +68,11 @@ posepred
 -------------
 The proposed method is a sequence to sequence LSTM model based on [pv-lstm](https://github.com/vita-epfl/bounding-box-prediction). It takes as input the velocities and the positions of observed past joints and outputs the predicted velocities of the future joints, from which the future positions can be computed. As figure below shows, the model encodes the position and the velocity of each person into a hidden layer which will be used as the initial state for the decoder. Using the encoded state, the decoder takes the velocity of the last observed frame as input and generates the predicted velocity for the first future frame which will be used as the input to the next LSTM cell. To train this model, the l1 loss between the predicted and ground-truth velocities is leveraged.
 
-<p align="center"> 
+
 ![Our proposed method](statics/method.png)
-</p>
+
+<img align="statics/method.png" src="..." alt="Our proposed method">
+
 
 ## Results
 
