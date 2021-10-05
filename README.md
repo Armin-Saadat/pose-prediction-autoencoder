@@ -1,6 +1,7 @@
 # Towards Human Pose Prediction using the Encoder-Decoder LSTM 
 
 Ranked <b>3rd</b> at Social Motion Forecasting ([SoMoF](https://somof.stanford.edu/)) Benchmark, a challenge held by <b>Stanford University</b>.
+You can find poster or report of this work at [statics/](https://github.com/Armin-Saadat/pose-prediction-autoencoder/tree/main/statics) path.
 
 ## _Absract_:
 
