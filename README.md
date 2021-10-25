@@ -114,15 +114,13 @@ pip install -r requirements.txt
 In order to train the model for posetrack:
 
 ```
-cd train_scripts
-python3 -m lstmvel_posetrack
+python3 -m train_scripts.lstmvel_posetrack
 ```
 
 To train the model on 3DPW:
 
 ```
-cd train_scripts
-python3 -m lstmvel_3dpw
+python3 -m train_scripts.lstmvel_3dpw
 ```
 Model also is validating each epoch on training section.
 
@@ -130,18 +128,17 @@ The output will be the vim and vam values also you can visualize your outpurs us
 
 Test the trained network on posetrack:
 ```
-cd predict
-python lstmvel_posetrack.py --load_ckpt=<path_to_saved_snapshot.pth>
+python -m predict.lstmvel_posetrack.py --load_ckpt=<path_to_saved_snapshot.pth>
 ```
 
 Test and predict the trained network on 3dpw:
 ```
-cd predict
-python lstmvel_3dpw.py --load_ckpt=<path_to_saved_snapshot.pth>
+python -m predict.lstmvel_3dpw.py --load_ckpt=<path_to_saved_snapshot.pth>
 ```
 where other options are similar to the training. 
 
 We also have implemented many other models that you can see in models/ directory. If you want to run those, you have to repeat aforementioned procedure for those models. 
+
 ## Arguments
 This is a description to provide details about arguments of Posepred API.
 Pospred is an open-source toolbox for pose prediction in PyTorch. It is a part of the VitaLab project.
